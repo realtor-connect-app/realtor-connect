@@ -1,5 +1,11 @@
 group = 'com.makurohashami'
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
