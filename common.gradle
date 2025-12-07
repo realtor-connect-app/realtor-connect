@@ -1,0 +1,6 @@
+group = 'com.makurohashami'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
