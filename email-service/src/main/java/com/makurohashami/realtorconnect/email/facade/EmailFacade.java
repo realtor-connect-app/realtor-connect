@@ -1,0 +1,49 @@
+package com.makurohashami.realtorconnect.email.facade;
+
+import com.makurohashami.realtorconnect.email.model.Email;
+import com.makurohashami.realtorconnect.email.service.EmailGeneratorService;
+import com.makurohashami.realtorconnect.email.service.EmailSenderService;
+import com.makurohashami.realtorconnect.entity.realtor.Realtor;
+import com.makurohashami.realtorconnect.entity.user.User;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@AllArgsConstructor
+public class EmailFacade {
+
+    private final EmailGeneratorService emailGeneratorService;
+    private final Optional<EmailSenderService> emailSenderService;
+
+    private void sendEmail(Email email) {
+        if (emailSenderService.isEmpty()) {
+            log.debug("Email not sent because emailing disabled. Email: {}", email);
+            return;
+        }
+        emailSenderService.get().sendEmail(email);
+    }
+
+    public void sendVerifyEmail(User user, String token) {
+        sendEmail(emailGeneratorService.generateVerifyEmail(user, token));
+    }
+
+    public void sendStartPremiumEmail(Realtor realtor, int durationInMonths) {
+        sendEmail(emailGeneratorService.generateStartPremiumEmail(realtor, durationInMonths));
+    }
+
+    public void sendPremiumExpiresEmail(Realtor realtor) {
+        sendEmail(emailGeneratorService.generatePremiumExpiresEmail(realtor));
+    }
+
+    public void sendPremiumExpiredEmail(Realtor realtor) {
+        sendEmail(emailGeneratorService.generatePremiumExpiredEmail(realtor));
+    }
+
+    public void sendResetPasswordEmail(User user, String token) {
+        sendEmail(emailGeneratorService.generateResetPasswordEmail(user, token));
+    }
+
+}
