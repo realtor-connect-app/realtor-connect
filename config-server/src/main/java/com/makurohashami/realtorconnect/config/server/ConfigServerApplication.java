@@ -1,4 +1,4 @@
-package com.makurohashami.rc.config.server;
+package com.makurohashami.realtorconnect.config.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
