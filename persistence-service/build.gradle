@@ -18,3 +18,7 @@ dependencies {
 
     implementation project(':cdn-service')
 }
+
+bootJar {
+    enabled = false
+}
