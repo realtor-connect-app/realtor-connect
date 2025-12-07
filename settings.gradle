@@ -1,1 +1,3 @@
 rootProject.name = 'realtor-connect'
+
+include ':config-server'
