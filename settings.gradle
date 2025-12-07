@@ -2,3 +2,4 @@ rootProject.name = 'realtor-connect'
 
 include ':config-server'
 include ':cdn-service'
+include ':persistence-service'
