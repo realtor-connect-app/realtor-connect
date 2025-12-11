@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}/${spring.application.name}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${spring.application.name}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jackson:
     date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
@@ -46,7 +46,7 @@ server:
 
 security.jwt:
   token-ttl: 18000000 # 5 hours
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:096E8C3B89C1E0FD82110B0EC40557BAF8A537ED61CFBFBB5CCF02F0D87A99D7}
 
 network:
   hostname: ${APP_DOMAIN:http://localhost:${server.port}}
