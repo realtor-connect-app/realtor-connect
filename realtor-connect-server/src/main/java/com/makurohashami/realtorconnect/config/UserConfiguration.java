@@ -1,0 +1,17 @@
+package com.makurohashami.realtorconnect.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "user")
+public class UserConfiguration {
+
+    private Integer timeToVerifyEmailInDays;
+    private Integer tokenTtlInDays;
+
+}

@@ -1,0 +1,111 @@
+package com.makurohashami.realtorconnect.controller;
+
+import com.makurohashami.realtorconnect.annotation.security.IsSameUser;
+import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
+import com.makurohashami.realtorconnect.dto.user.ChangePasswordDto;
+import com.makurohashami.realtorconnect.dto.user.UserAddDto;
+import com.makurohashami.realtorconnect.dto.user.UserDto;
+import com.makurohashami.realtorconnect.dto.user.UserFullDto;
+import com.makurohashami.realtorconnect.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
+
+@Validated
+@RestController
+@AllArgsConstructor
+@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "User Controller", description = "Allows you manage your own information")
+public class UserController {
+
+    private final UserService service;
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get short user")
+    public ResponseEntity<ApiSuccess<UserDto>> readById(@PathVariable long id) {
+        return ok(service.readById(id));
+    }
+
+    @IsSameUser
+    @GetMapping("/{id}/full")
+    @Operation(summary = "Get full user")
+    public ResponseEntity<ApiSuccess<UserFullDto>> readFullById(@PathVariable long id) {
+        return ok(service.readFullById(id));
+    }
+
+    @IsSameUser
+    @PutMapping("/{id}")
+    @Operation(summary = "Update user")
+    public ResponseEntity<ApiSuccess<UserFullDto>> update(@PathVariable long id,
+                                                          @RequestBody @Valid UserAddDto dto) {
+        return ok(service.update(id, dto));
+    }
+
+    @IsSameUser
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/verifyEmail/{token}")
+    @PreAuthorize("isAnonymous()")
+    @Operation(summary = "Verify email of anonymous user")
+    public ResponseEntity<ApiSuccess<Boolean>> verifyEmail(@PathVariable UUID token) {
+        return ok(service.verifyEmail(token));
+    }
+
+    @IsSameUser
+    @PostMapping(value = "/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Set avatar to user")
+    public ResponseEntity<ApiSuccess<String>> setAvatar(@PathVariable long id,
+                                                        @RequestPart MultipartFile avatar) {
+        return ok(service.setAvatar(id, avatar));
+    }
+
+    @IsSameUser
+    @DeleteMapping("/{id}/avatar")
+    @Operation(summary = "Delete avatar from user")
+    public ResponseEntity<Void> deleteAvatar(@PathVariable long id) {
+        service.deleteAvatar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/passwords/reset")
+    @PreAuthorize("isAnonymous()")
+    @Operation(summary = "Send request to reset password")
+    public ResponseEntity<ApiSuccess<Boolean>> resetPassword(@RequestParam @Email @NotNull @Size(min = 3, max = 255) String email) {
+        return ok(service.resetPassword(email));
+    }
+
+    @PostMapping("/passwords/change")
+    @PreAuthorize("isAnonymous()")
+    @Operation(summary = "Change password")
+    public ResponseEntity<ApiSuccess<Boolean>> changePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
+        return ok(service.changePassword(changePasswordDto));
+    }
+
+}

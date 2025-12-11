@@ -1,0 +1,30 @@
+package com.makurohashami.realtorconnect.mapper;
+
+import com.makurohashami.realtorconnect.dto.realtor.RealtorAddDto;
+import com.makurohashami.realtorconnect.dto.realtor.RealtorDto;
+import com.makurohashami.realtorconnect.dto.realtor.RealtorFullDto;
+import com.makurohashami.realtorconnect.entity.realtor.Realtor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+@Mapper(componentModel = "spring", uses = UserMapper.class)
+public interface RealtorMapper {
+
+    RealtorDto toDto(Realtor realtor);
+
+    RealtorFullDto toFullDto(Realtor realtor);
+
+    @Mapping(source = "password", target = "password", qualifiedByName = "encodePassword")
+    @Mapping(target = "avatar", expression = "java( userMapper.getDefaultAvatarUrl() )")
+    @Mapping(target = "role", constant = "REALTOR")
+    @Mapping(target = "blocked", constant = "false")
+    @Mapping(target = "emailVerified", constant = "false")
+    @Mapping(target = "subscriptionType", constant = "FREE")
+    @Mapping(target = "publicRealEstatesCount", constant = "0")
+    Realtor toEntity(RealtorAddDto dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "password", target = "password", qualifiedByName = "encodePassword")
+    Realtor update(@MappingTarget Realtor realtor, RealtorAddDto dto);
+}

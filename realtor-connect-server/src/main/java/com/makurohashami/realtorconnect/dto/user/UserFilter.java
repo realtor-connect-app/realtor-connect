@@ -1,0 +1,21 @@
+package com.makurohashami.realtorconnect.dto.user;
+
+import com.makurohashami.realtorconnect.entity.user.Role;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserFilter {
+
+    private String name;
+    private String phone;
+    private String email;
+    private List<Role> roles;
+
+}

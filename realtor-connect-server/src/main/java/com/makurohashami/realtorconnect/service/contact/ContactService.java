@@ -1,0 +1,59 @@
+package com.makurohashami.realtorconnect.service.contact;
+
+import com.makurohashami.realtorconnect.annotation.Loggable;
+import com.makurohashami.realtorconnect.dto.realtor.ContactDto;
+import com.makurohashami.realtorconnect.entity.realtor.Contact;
+import com.makurohashami.realtorconnect.mapper.ContactMapper;
+import com.makurohashami.realtorconnect.repository.ContactRepository;
+import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+@Loggable
+@RequiredArgsConstructor
+public class ContactService {
+
+    public static final String NOT_FOUND_BY_ID_MSG = "Contact with id '%d' not found";
+
+    private final ContactMapper contactMapper;
+    private final ContactRepository contactRepository;
+
+    @Transactional
+    public ContactDto create(long realtorId, ContactDto contactDto) {
+        return contactMapper.toDto(contactRepository.save(
+                contactMapper.toEntity(contactDto, realtorId)));
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "getContactDto", key = "#contactId")
+    public ContactDto readById(long contactId) {
+        return contactMapper.toDto(contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, contactId))));
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "getListContactDto", key = "#realtorId")
+    public List<ContactDto> readAll(long realtorId) {
+        return contactMapper.toListDto(contactRepository.findAllByRealtorId(realtorId));
+    }
+
+    @Transactional
+    public ContactDto update(long contactId, ContactDto contactDto) {
+        Contact toUpdate = contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, contactId)));
+        return contactMapper.toDto(contactMapper.update(toUpdate, contactDto));
+    }
+
+    @Transactional
+    public void delete(long contactId) {
+        contactRepository.deleteById(contactId);
+    }
+
+
+}

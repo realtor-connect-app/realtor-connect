@@ -1,0 +1,105 @@
+package com.makurohashami.realtorconnect.controller;
+
+import com.makurohashami.realtorconnect.annotation.security.IsRealEstateOwner;
+import com.makurohashami.realtorconnect.annotation.security.IsRealEstatePublic;
+import com.makurohashami.realtorconnect.annotation.security.IsSameRealtor;
+import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
+import com.makurohashami.realtorconnect.dto.realestate.RealEstateAddDto;
+import com.makurohashami.realtorconnect.dto.realestate.RealEstateDto;
+import com.makurohashami.realtorconnect.dto.realestate.RealEstateFilter;
+import com.makurohashami.realtorconnect.dto.realestate.RealEstateFullDto;
+import com.makurohashami.realtorconnect.service.realestate.RealEstateService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import static com.makurohashami.realtorconnect.util.ApiResponseUtil.created;
+import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping(value = "/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Real Estate Controller", description = "Allows you manage your own real estates, and see other's real estates")
+public class RealEstateController {
+
+    private final RealEstateService service;
+
+    @IsSameRealtor
+    @PostMapping("/{realtorId}/real-estates")
+    @Operation(summary = "Add real estate")
+    public ResponseEntity<ApiSuccess<RealEstateFullDto>> create(@PathVariable long realtorId, @RequestBody RealEstateAddDto realEstateDto) {
+        return created(service.create(realtorId, realEstateDto));
+    }
+
+    @IsRealEstatePublic
+    @GetMapping("/real-estates/{realEstateId}")
+    @Operation(summary = "Get short real estate")
+    public ResponseEntity<ApiSuccess<RealEstateDto>> readShortById(@PathVariable long realEstateId) {
+        return ok(service.readShortById(realEstateId));
+    }
+
+    @IsRealEstateOwner
+    @GetMapping("/real-estates/{realEstateId}/full")
+    @Operation(summary = "Get full real estate")
+    public ResponseEntity<ApiSuccess<RealEstateFullDto>> readFullById(@PathVariable long realEstateId) {
+        return ok(service.readFullById(realEstateId));
+    }
+
+    @GetMapping("/real-estates")
+    @Operation(summary = "Get short real estates")
+    public ResponseEntity<ApiSuccess<Page<RealEstateDto>>> readAllShorts(@RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "15") int size,
+                                                                         @ModelAttribute RealEstateFilter filter) {
+        return ok(service.readAllShorts(filter, PageRequest.of(page, size)));
+    }
+
+    @IsSameRealtor
+    @GetMapping("/{realtorId}/real-estates/fulls")
+    @Operation(summary = "Get full real estates. RealtorId in filter will be ignored")
+    public ResponseEntity<ApiSuccess<Page<RealEstateFullDto>>> readAllFulls(@PathVariable long realtorId,
+                                                                            @RequestParam(defaultValue = "0") int page,
+                                                                            @RequestParam(defaultValue = "15") int size,
+                                                                            @ModelAttribute RealEstateFilter filter) {
+        filter.setRealtorId(realtorId);
+        return ok(service.readAllFulls(filter, PageRequest.of(page, size)));
+    }
+
+
+    @IsRealEstateOwner
+    @PutMapping("/real-estates/{realEstateId}")
+    @Operation(summary = "Update real estate")
+    public ResponseEntity<ApiSuccess<RealEstateFullDto>> update(@PathVariable long realEstateId, @RequestBody RealEstateAddDto realEstateDto) {
+        return ok(service.update(realEstateId, realEstateDto));
+    }
+
+
+    @IsRealEstateOwner
+    @DeleteMapping("/real-estates/{realEstateId}")
+    @Operation(summary = "Delete real estate")
+    public ResponseEntity<Void> delete(@PathVariable long realEstateId) {
+        service.delete(realEstateId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @IsRealEstateOwner
+    @PutMapping("/real-estates/{realEstateId}/mark-called")
+    @Operation(summary = "Mark real estate called")
+    public ResponseEntity<ApiSuccess<Boolean>> updateCalled(@PathVariable long realEstateId) {
+        return ok(service.updateCalled(realEstateId, true));
+    }
+
+}
