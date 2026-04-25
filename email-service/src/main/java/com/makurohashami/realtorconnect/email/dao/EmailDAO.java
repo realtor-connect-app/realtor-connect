@@ -5,6 +5,7 @@ import com.makurohashami.realtorconnect.email.model.EmailStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -22,12 +23,15 @@ public class EmailDAO {
             VALUES (:toEmail, :subject, :body, :isHtml, :status, :createdAt)
             """;
 
-    private static final String SELECT_BY_STATUS = """
-            SELECT id, to_email, subject, body, is_html, status, created_at, updated_at
-            FROM email WHERE status = :status ORDER BY created_at LIMIT :batchSize
+    private static final String FETCH_AND_LOCK_BATCH = """
+            UPDATE email SET status = :processingStatus, updated_at = NOW()
+            WHERE id IN (
+                SELECT id FROM email WHERE status = :newStatus ORDER BY created_at LIMIT :batchSize
+            )
+            RETURNING id, to_email, subject, body, is_html, status, created_at, updated_at
             """;
 
-    private static final String UPDATE_STATUS = "UPDATE email SET status = :status, updated_at = NOW() WHERE id = :id";
+    private static final String BATCH_UPDATE_STATUS = "UPDATE email SET status = :status, updated_at = NOW() WHERE id IN (:ids)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -37,16 +41,19 @@ public class EmailDAO {
         email.setId(keyHolder.getKeyAs(Long.class));
     }
 
-    public List<Email> findByStatus(EmailStatus status, int batchSize) {
+    public List<Email> fetchAndSetStatusBatch(int batchSize) {
         return jdbcTemplate.query(
-                SELECT_BY_STATUS,
-                buildStatusBatchParams(status, batchSize),
+                FETCH_AND_LOCK_BATCH,
+                buildFetchAndLockParams(batchSize),
                 (rs, rowNum) -> mapRow(rs)
         );
     }
 
-    public void updateStatus(Long id, EmailStatus status) {
-        jdbcTemplate.update(UPDATE_STATUS, buildUpdateStatusParams(id, status));
+    public void batchUpdateStatus(Collection<Long> ids, EmailStatus status) {
+        if (ids.isEmpty()) {
+            return;
+        }
+        jdbcTemplate.update(BATCH_UPDATE_STATUS, buildBatchUpdateStatusParams(ids, status));
     }
 
     private MapSqlParameterSource buildInsertParams(Email email) {
@@ -59,15 +66,16 @@ public class EmailDAO {
                 .addValue("createdAt", Timestamp.from(email.getCreatedAt()));
     }
 
-    private MapSqlParameterSource buildStatusBatchParams(EmailStatus status, int batchSize) {
+    private MapSqlParameterSource buildFetchAndLockParams(int batchSize) {
         return new MapSqlParameterSource()
-                .addValue("status", status.getId())
+                .addValue("newStatus", EmailStatus.NEW.getId())
+                .addValue("processingStatus", EmailStatus.PROCESSING.getId())
                 .addValue("batchSize", batchSize);
     }
 
-    private MapSqlParameterSource buildUpdateStatusParams(Long id, EmailStatus status) {
+    private MapSqlParameterSource buildBatchUpdateStatusParams(Collection<Long> ids, EmailStatus status) {
         return new MapSqlParameterSource()
-                .addValue("id", id)
+                .addValue("ids", ids)
                 .addValue("status", status.getId());
     }
 

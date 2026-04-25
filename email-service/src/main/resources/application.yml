@@ -2,9 +2,9 @@ spring:
   application:
     name: email-service
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${spring.application.name}
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+    url: jdbc:postgresql://localhost:5432/${spring.application.name}
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
   flyway:
     baseline-on-migrate: true
@@ -12,8 +12,8 @@ spring:
 email:
   server:
     credentials:
-      username: ${EMAIL_USERNAME}
-      password: ${EMAIL_PASSWORD}
+      username: ''
+      password: ''
     network:
       host: smtp.gmail.com
       port: 587
@@ -23,7 +23,7 @@ email:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
   debugMode:
-    enabled: ${DEBUG_EMAIL_ENABLED:false}
+    enabled: false
     from: info@realtorconnect.com
     server:
       credentials:
