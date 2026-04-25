@@ -12,12 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Email {
 
+    private Long id;
     private String to;
     private String subject;
-    private boolean isHtml;
     private String body;
+    private boolean isHtml;
     private EmailStatus status;
     private Instant createdAt;
-    private Instant sentAt;
+    private Instant updatedAt;
 
 }
