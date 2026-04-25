@@ -1,3 +1,5 @@
 rootProject.name = 'realtor-connect'
 
 include ':realtor-connect-server'
+include ':email-model'
+include ':email-service'

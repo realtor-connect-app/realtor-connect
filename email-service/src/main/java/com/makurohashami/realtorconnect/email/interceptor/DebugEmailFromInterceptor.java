@@ -1,7 +1,7 @@
-package com.makurohashami.realtorconnect.service.email;
+package com.makurohashami.realtorconnect.email.interceptor;
 
-import com.makurohashami.realtorconnect.config.EmailConfiguration;
-import com.makurohashami.realtorconnect.config.EmailConfiguration.EmailDebugModeEnabled;
+import com.makurohashami.realtorconnect.email.condition.EmailDebugModeEnabled;
+import com.makurohashami.realtorconnect.email.config.EmailConfiguration;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Arrays;

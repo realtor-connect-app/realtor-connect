@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect;
+package com.makurohashami.realtorconnect.email;
 
 import java.time.LocalDateTime;
 import java.util.TimeZone;
@@ -6,14 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
+@EnableScheduling
 @EnableAspectJAutoProxy
 @SpringBootApplication
-public class RealtorConnectApplication {
+public class EmailServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RealtorConnectApplication.class, args).getEnvironment();
+        SpringApplication.run(EmailServiceApplication.class, args);
         changeDefaultTimeZone();
     }
 

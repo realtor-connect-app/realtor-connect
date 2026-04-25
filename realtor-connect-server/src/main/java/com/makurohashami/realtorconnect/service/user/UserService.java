@@ -14,7 +14,7 @@ import com.makurohashami.realtorconnect.entity.user.User;
 import com.makurohashami.realtorconnect.mapper.UserMapper;
 import com.makurohashami.realtorconnect.repository.UserRepository;
 import com.makurohashami.realtorconnect.service.auth.PermissionService;
-import com.makurohashami.realtorconnect.service.email.EmailFacade;
+import com.makurohashami.realtorconnect.service.email.EmailService;
 import com.makurohashami.realtorconnect.service.file.FileParamsGenerator;
 import com.makurohashami.realtorconnect.service.file.FileService;
 import com.makurohashami.realtorconnect.specification.UserFilterSpecifications;
@@ -62,7 +62,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final UserConfiguration userConfiguration;
-    private final EmailFacade emailFacade;
+    private final EmailService emailService;
     private final ConfirmationTokenService confirmationTokenService;
     private final PermissionService permissionService;
     private final Validator<MultipartFile> avatarValidator;
@@ -87,7 +87,7 @@ public class UserService {
         User user = userMapper.toEntity(dto);
         user.setRole(role);
         UserFullDto userFullDto = userMapper.toFullDto(userRepository.save(user));
-        emailFacade.sendVerifyEmail(user, confirmationTokenService.createToken(user).toString());
+        emailService.sendVerifyEmail(user, confirmationTokenService.createToken(user).toString());
         return userFullDto;
     }
 
@@ -213,7 +213,7 @@ public class UserService {
             throw new ActionNotAllowedException("Can't reset password for an unverified user");
         }
         confirmationTokenService.deleteByUserId(user.getId());
-        emailFacade.sendResetPasswordEmail(user, confirmationTokenService.createToken(user).toString());
+        emailService.sendPasswordReset(user, confirmationTokenService.createToken(user).toString());
         return true;
     }
 

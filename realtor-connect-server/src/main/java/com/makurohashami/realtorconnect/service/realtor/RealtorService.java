@@ -12,7 +12,7 @@ import com.makurohashami.realtorconnect.entity.realtor.enumeration.SubscriptionT
 import com.makurohashami.realtorconnect.mapper.RealtorMapper;
 import com.makurohashami.realtorconnect.repository.RealEstateRepository;
 import com.makurohashami.realtorconnect.repository.RealtorRepository;
-import com.makurohashami.realtorconnect.service.email.EmailFacade;
+import com.makurohashami.realtorconnect.service.email.EmailService;
 import com.makurohashami.realtorconnect.service.user.ConfirmationTokenService;
 import com.makurohashami.realtorconnect.specification.RealtorFilterSpecifications;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
@@ -39,7 +39,7 @@ public class RealtorService {
 
     public static final String NOT_FOUND_BY_ID_MSG = "Realtor with id '%d' not found";
 
-    private final EmailFacade emailFacade;
+    private final EmailService emailService;
     private final RealtorMapper realtorMapper;
     private final RealtorRepository realtorRepository;
     private final RealtorConfiguration realtorConfiguration;
@@ -49,7 +49,7 @@ public class RealtorService {
     @Transactional
     public RealtorFullDto create(RealtorAddDto dto) {
         Realtor realtor = realtorRepository.save(realtorMapper.toEntity(dto));
-        emailFacade.sendVerifyEmail(realtor, tokenService.createToken(realtor).toString());
+        emailService.sendVerifyEmail(realtor, tokenService.createToken(realtor).toString());
         return realtorMapper.toFullDto(realtor);
     }
 
@@ -100,7 +100,7 @@ public class RealtorService {
                 .plusMonths(durationInMonths).toInstant());
         realtor.setNotifiedDaysToExpirePremium(Integer.MAX_VALUE);
         realtorRepository.save(realtor);
-        emailFacade.sendStartPremiumEmail(realtor, durationInMonths);
+        emailService.sendStartPremium(realtor, durationInMonths);
         return realtor.getPremiumExpiresAt();
     }
 
@@ -116,7 +116,7 @@ public class RealtorService {
         });
         List<Long> realtorIds = realtors.stream().map(Realtor::getId).toList();
         realEstateRepository.makeAllRealEstatesPrivateByRealtors(realtorIds);
-        realtors.forEach(emailFacade::sendPremiumExpiredEmail);
+        realtors.forEach(emailService::sendPremiumExpired);
     }
 
     @Transactional
@@ -131,7 +131,7 @@ public class RealtorService {
         ZonedDateTime time = ZonedDateTime.now().plusDays(daysLeft);
         realtorRepository.findAllNotNotifiedExpiringPremium(daysLeft, time.getDayOfMonth(), time.getMonthValue(), time.getYear())
                 .forEach(realtor -> {
-                    emailFacade.sendPremiumExpiresEmail(realtor);
+                    emailService.sendPremiumExpires(realtor);
                     realtor.setNotifiedDaysToExpirePremium(daysLeft);
                     realtorRepository.save(realtor);
                 });
