@@ -14,10 +14,10 @@ public class EmailKafkaListener {
 
     private final EmailProcessorService emailProcessorService;
 
-    @KafkaListener(
+    /*@KafkaListener(
             topics = "emails",
             containerFactory = "emailKafkaListenerContainerFactory"
-    )
+    )*/
     public void onEmailMessage(EmailMessage message) {
         emailProcessorService.addToQueue(message);
     }
