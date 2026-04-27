@@ -2,10 +2,12 @@ package com.makurohashami.realtorconnect.email.service;
 
 import com.makurohashami.realtorconnect.email.config.EmailConfiguration;
 import com.makurohashami.realtorconnect.email.model.EmailMessage;
+import jakarta.annotation.PreDestroy;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,23 +20,46 @@ import org.springframework.util.CollectionUtils;
 @RequiredArgsConstructor
 public class EmailProcessorService {
 
-    private static final LinkedBlockingQueue<EmailMessage> emailQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<EmailMessage> emailQueue = new LinkedBlockingQueue<>();
+    private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
     private final EmailSenderService emailSenderService;
     private final EmailConfiguration emailConfiguration;
 
     public void addToQueue(EmailMessage emailMessage) {
+        if (shuttingDown.get()) {
+            log.warn("Email processor is shutting down. Email {} to {} was not queued", emailMessage.getEmailTemplate(), emailMessage.getTo());
+            throw new RuntimeException("Email processor is shutting down");
+        }
+
         emailQueue.add(emailMessage);
         log.debug("Queued {} email to {}", emailMessage.getEmailTemplate(), emailMessage.getTo());
     }
 
     @Scheduled(fixedDelayString = "${email.processor.processing-delay-ms:1000}")
     protected void processEmails() {
+        if (shuttingDown.get()) {
+            return;
+        }
+        processBatch(emailConfiguration.getProcessor().getBatchSize());
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        log.info("Graceful shutdown started for email processor. Remaining emails: {}", emailQueue.size());
+        shuttingDown.set(true);
+        processBatch(emailQueue.size());
+        log.info("Email processor graceful shutdown completed. Queue is empty");
+    }
+
+    private void processBatch(int batchSize) {
         List<EmailMessage> emails = new LinkedList<>();
-        emailQueue.drainTo(emails, emailConfiguration.getProcessor().getBatchSize());
+        emailQueue.drainTo(emails, batchSize);
+
         if (CollectionUtils.isEmpty(emails)) {
             return;
         }
+
         log.debug("Processing {} emails", emails.size());
 
         AtomicInteger sentCount = new AtomicInteger();
@@ -51,9 +76,9 @@ public class EmailProcessorService {
 
     private void mapResult(boolean success, AtomicInteger sentCount, AtomicInteger failedCount) {
         if (success) {
-            sentCount.getAndIncrement();
+            sentCount.incrementAndGet();
         } else {
-            failedCount.getAndIncrement();
+            failedCount.incrementAndGet();
         }
     }
 
