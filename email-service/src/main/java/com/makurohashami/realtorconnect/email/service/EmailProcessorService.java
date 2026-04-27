@@ -1,82 +1,60 @@
 package com.makurohashami.realtorconnect.email.service;
 
-import com.makurohashami.realtorconnect.email.config.EmailProcessorProperties;
-import com.makurohashami.realtorconnect.email.dao.EmailDAO;
-import com.makurohashami.realtorconnect.email.model.Email;
+import com.makurohashami.realtorconnect.email.config.EmailConfiguration;
 import com.makurohashami.realtorconnect.email.model.EmailMessage;
-import com.makurohashami.realtorconnect.email.model.EmailStatus;
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailProcessorService {
 
-    private final EmailDAO emailDAO;
+    private static final LinkedBlockingQueue<EmailMessage> emailQueue = new LinkedBlockingQueue<>();
+
     private final EmailSenderService emailSenderService;
-    private final SpringTemplateEngine springTemplateEngine;
-    private final EmailProcessorProperties emailProcessorProperties;
+    private final EmailConfiguration emailConfiguration;
 
     public void addToQueue(EmailMessage emailMessage) {
-        emailDAO.save(buildEmail(emailMessage));
-        log.debug("Email to {} queued with status NEW", emailMessage.getTo());
+        emailQueue.add(emailMessage);
+        log.debug("Queued {} email to {}", emailMessage.getEmailTemplate(), emailMessage.getTo());
     }
 
     @Scheduled(fixedDelayString = "${email.processor.processing-delay-ms:1000}")
     protected void processEmails() {
-        List<Email> emails = emailDAO.fetchAndSetStatusBatch(emailProcessorProperties.getBatchSize());
+        List<EmailMessage> emails = new LinkedList<>();
+        emailQueue.drainTo(emails, emailConfiguration.getProcessor().getBatchSize());
         if (CollectionUtils.isEmpty(emails)) {
             return;
         }
         log.debug("Processing {} emails", emails.size());
 
-        ConcurrentLinkedQueue<Long> sentIds = new ConcurrentLinkedQueue<>();
-        ConcurrentLinkedQueue<Long> failedIds = new ConcurrentLinkedQueue<>();
+        AtomicInteger sentCount = new AtomicInteger();
+        AtomicInteger failedCount = new AtomicInteger();
 
         List<CompletableFuture<Void>> futures = emails.stream()
                 .map(email -> emailSenderService.send(email)
-                        .thenAccept(success -> {
-                            if (success) {
-                                sentIds.add(email.getId());
-                            } else {
-                                failedIds.add(email.getId());
-                            }
-                        }))
+                        .thenAccept(success -> mapResult(success, sentCount, failedCount)))
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        emailDAO.batchUpdateStatus(new ArrayList<>(sentIds), EmailStatus.SENT);
-        emailDAO.batchUpdateStatus(new ArrayList<>(failedIds), EmailStatus.FAILED);
-
-        log.debug("Batch processed: {} sent, {} failed", sentIds.size(), failedIds.size());
+        log.debug("Batch processed: {} sent, {} failed", sentCount.get(), failedCount.get());
     }
 
-    private Email buildEmail(EmailMessage emailMessage) {
-        String body = springTemplateEngine.process(
-                emailMessage.getEmailTemplate().getTemplatePath(),
-                new Context(emailMessage.getLocale(), emailMessage.getParams())
-        );
-
-        return Email.builder()
-                .to(emailMessage.getTo())
-                .subject(emailMessage.getEmailTemplate().getSubject())
-                .body(body)
-                .isHtml(emailMessage.getEmailTemplate().isHtml())
-                .status(EmailStatus.NEW)
-                .createdAt(Instant.now())
-                .build();
+    private void mapResult(boolean success, AtomicInteger sentCount, AtomicInteger failedCount) {
+        if (success) {
+            sentCount.getAndIncrement();
+        } else {
+            failedCount.getAndIncrement();
+        }
     }
 
 }

@@ -18,6 +18,7 @@ public class EmailConfiguration {
 
     private Server server;
     private DebugMode debugMode;
+    private ProcessorProperties processor;
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -72,6 +73,13 @@ public class EmailConfiguration {
         private boolean enabled;
         private String from;
         private Server server;
+    }
+
+    @Getter
+    @Setter
+    public static class ProcessorProperties {
+        private int processingDelayMs;
+        private int batchSize;
     }
 
 }

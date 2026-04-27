@@ -1,13 +1,6 @@
 spring:
   application:
     name: email-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/${spring.application.name}
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    baseline-on-migrate: true
 
 email:
   server:
@@ -34,4 +27,4 @@ email:
         port: 1025
   processor:
     processing-delay-ms: 1000
-    batch-size: 50
+    batch-size: 10
