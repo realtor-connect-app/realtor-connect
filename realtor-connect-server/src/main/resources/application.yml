@@ -17,6 +17,11 @@ spring:
       write_dates_as_timestamps: false
   flyway:
     baseline-on-migrate: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      retries: 3
 
 logging:
   customLogger:
@@ -151,3 +156,7 @@ cache:
     # Real Estate Photo
     getPhoto: 10000
     getListPhotoDto: 10000
+
+kafka.topics:
+  emails:
+    name: emails

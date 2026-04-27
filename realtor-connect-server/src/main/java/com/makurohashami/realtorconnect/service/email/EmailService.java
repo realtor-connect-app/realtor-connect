@@ -21,8 +21,10 @@ public class EmailService {
     @Value("${network.verifyEmailUrl}")
     private String verifyEmailUrl;
 
+    private final KafkaEmailProducer kafkaEmailProducer;
+
     private void sendEmail(EmailMessage message) {
-        //todo
+        kafkaEmailProducer.send(message);
     }
 
     @Async("emailExecutor")

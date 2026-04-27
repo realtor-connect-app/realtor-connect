@@ -8,6 +8,9 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
 
+server:
+  port: 8081
+
 management:
   show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
   metrics:
@@ -40,7 +43,7 @@ email:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
   debugMode:
-    enabled: false
+    enabled: true
     from: info@realtorconnect.com
     server:
       credentials:
