@@ -4,6 +4,7 @@ import com.makurohashami.realtorconnect.email.model.EmailMessage;
 import com.makurohashami.realtorconnect.email.service.EmailProcessorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -13,10 +14,11 @@ public class EmailKafkaListener {
 
     private final EmailProcessorService emailProcessorService;
 
-    /*@KafkaListener(
-            topics = "emails",
+    @KafkaListener(
+            topics = "${kafka.topics.emails.name}",
+            concurrency = "${kafka.topics.emails.concurrency}",
             containerFactory = "emailKafkaListenerContainerFactory"
-    )*/
+    )
     public void onEmailMessage(EmailMessage message) {
         emailProcessorService.addToQueue(message);
     }

@@ -1,6 +1,12 @@
 spring:
   application:
     name: email-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: email-service
+      auto-offset-reset: earliest
+      enable-auto-commit: false
 
 management:
   show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
@@ -46,3 +52,11 @@ email:
   processor:
     processing-delay-ms: 1000
     batch-size: 10
+
+kafka.topics:
+    emails:
+      name: emails
+      concurrency: 5
+      error-handler:
+        delay-ms: 100
+        max-attempts: 1
