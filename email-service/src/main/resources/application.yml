@@ -2,11 +2,29 @@ spring:
   application:
     name: email-service
 
+management:
+  show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable:
+      jvm: true
+      system: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: ${management.show-values}
+    configprops:
+      show-values: ${management.show-values}
+
 email:
   server:
     credentials:
-      username: ''
-      password: ''
+      username: ${EMAIL_USERNAME:''}
+      password: ${EMAIL_PASSWORD:''}
     network:
       host: smtp.gmail.com
       port: 587
