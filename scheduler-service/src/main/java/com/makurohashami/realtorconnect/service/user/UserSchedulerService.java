@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect.scheduler.service.user;
+package com.makurohashami.realtorconnect.service.user;
 
 import com.makurohashami.realtorconnect.config.UserConfiguration;
 import com.makurohashami.realtorconnect.repository.ConfirmationTokenRepository;

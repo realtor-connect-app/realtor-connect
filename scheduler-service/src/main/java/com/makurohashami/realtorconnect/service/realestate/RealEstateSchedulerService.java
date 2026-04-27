@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect.scheduler.service.realestate;
+package com.makurohashami.realtorconnect.service.realestate;
 
 import com.makurohashami.realtorconnect.config.RealEstateConfiguration;
 import com.makurohashami.realtorconnect.entity.realestate.RealEstate;

@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect.scheduler.service.realtor;
+package com.makurohashami.realtorconnect.service.realtor;
 
 import com.makurohashami.realtorconnect.config.RealtorConfiguration;
 import com.makurohashami.realtorconnect.entity.realtor.Realtor;
@@ -45,7 +45,7 @@ public class RealtorSchedulerService {
     @Scheduled(cron = "${realtor.scheduler.send-email-when-premium-expires-cron}")
     public void sendEmailWhenLeftOneDayOfPremium() {
         realtorConfiguration.getDaysToNotifyExpiresPremium().forEach(
-                daysLeft -> CompletableFuture.runAsync(() -> sendEmailWhenLeftFewDaysOfPremium(daysLeft))
+                daysLeft -> sendEmailWhenLeftFewDaysOfPremium(daysLeft)
         );
     }
 

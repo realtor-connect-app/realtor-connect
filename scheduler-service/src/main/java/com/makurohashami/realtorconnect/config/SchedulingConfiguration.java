@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect.scheduler.config;
+package com.makurohashami.realtorconnect.config;
 
 import lombok.Getter;
 import lombok.Setter;

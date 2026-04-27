@@ -1,4 +1,4 @@
-package com.makurohashami.realtorconnect.scheduler;
+package com.makurohashami.realtorconnect;
 
 import java.time.LocalDateTime;
 import java.util.TimeZone;
