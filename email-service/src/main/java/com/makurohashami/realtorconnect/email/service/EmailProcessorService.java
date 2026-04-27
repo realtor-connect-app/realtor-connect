@@ -2,6 +2,11 @@ package com.makurohashami.realtorconnect.email.service;
 
 import com.makurohashami.realtorconnect.email.config.EmailConfiguration;
 import com.makurohashami.realtorconnect.email.model.EmailMessage;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,9 +27,12 @@ public class EmailProcessorService {
 
     private final LinkedBlockingQueue<EmailMessage> emailQueue = new LinkedBlockingQueue<>();
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
+    private Counter sentCounter;
+    private Counter failedCounter;
 
     private final EmailSenderService emailSenderService;
     private final EmailConfiguration emailConfiguration;
+    private final MeterRegistry meterRegistry;
 
     public void addToQueue(EmailMessage emailMessage) {
         if (shuttingDown.get()) {
@@ -36,12 +44,11 @@ public class EmailProcessorService {
         log.debug("Queued {} email to {}", emailMessage.getEmailTemplate(), emailMessage.getTo());
     }
 
-    @Scheduled(fixedDelayString = "${email.processor.processing-delay-ms:1000}")
-    protected void processEmails() {
-        if (shuttingDown.get()) {
-            return;
-        }
-        processBatch(emailConfiguration.getProcessor().getBatchSize());
+    @PostConstruct
+    public void init() {
+        Gauge.builder("email.processor.queue.size", emailQueue::size).register(meterRegistry);
+        sentCounter = Counter.builder("email.processor.count").tag("type", "SENT").register(meterRegistry);
+        failedCounter = Counter.builder("email.processor.count").tag("type", "FAILED").register(meterRegistry);
     }
 
     @PreDestroy
@@ -52,7 +59,16 @@ public class EmailProcessorService {
         log.info("Email processor graceful shutdown completed. Queue is empty");
     }
 
-    private void processBatch(int batchSize) {
+    @Scheduled(fixedDelayString = "${email.processor.processing-delay-ms:1000}")
+    protected void processEmails() {
+        if (shuttingDown.get()) {
+            return;
+        }
+        processBatch(emailConfiguration.getProcessor().getBatchSize());
+    }
+
+    @Timed(value = "email.processor.service", histogram = true)
+    protected void processBatch(int batchSize) {
         List<EmailMessage> emails = new LinkedList<>();
         emailQueue.drainTo(emails, batchSize);
 
@@ -71,6 +87,10 @@ public class EmailProcessorService {
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        sentCounter.increment(sentCount.get());
+        failedCounter.increment(failedCount.get());
+
         log.debug("Batch processed: {} sent, {} failed", sentCount.get(), failedCount.get());
     }
 
