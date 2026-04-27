@@ -1,19 +1,17 @@
-package com.makurohashami.realtorconnect;
+package com.makurohashami.realtorconnect.scheduler;
 
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Slf4j
-@EnableAspectJAutoProxy
 @SpringBootApplication
-public class RealtorConnectApplication {
+public class SchedulerServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RealtorConnectApplication.class, args).getEnvironment();
+        SpringApplication.run(SchedulerServiceApplication.class, args).getEnvironment();
         changeDefaultTimeZone();
     }
 

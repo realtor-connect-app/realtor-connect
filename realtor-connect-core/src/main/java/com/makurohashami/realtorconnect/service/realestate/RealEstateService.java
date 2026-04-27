@@ -19,8 +19,6 @@ import com.makurohashami.realtorconnect.specification.RealEstateSpecifications;
 import com.makurohashami.realtorconnect.util.exception.ActionNotAllowedException;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -141,14 +138,6 @@ public class RealEstateService {
         realEstate.setCalled(called);
         realEstate.setCalledAt(Instant.now());
         return realEstate.isCalled();
-    }
-
-    @Transactional
-    @Scheduled(fixedRateString = "${real-estate.scheduler.check-called}")
-    protected void setNotCalledWhenCalledAtExpired() {
-        Instant time = ZonedDateTime.now().minusDays(realEstateConfiguration.getDaysForExpireCalled()).toInstant();
-        List<RealEstate> realEstates = realEstateRepository.findAllByCalledAtBeforeAndCalledTrue(time);
-        realEstates.forEach(realEstate -> realEstate.setCalled(false));
     }
 
 }

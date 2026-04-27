@@ -1,17 +1,13 @@
 package com.makurohashami.realtorconnect.service.user;
 
 import com.makurohashami.realtorconnect.annotation.Loggable;
-import com.makurohashami.realtorconnect.config.UserConfiguration;
 import com.makurohashami.realtorconnect.entity.user.ConfirmationToken;
 import com.makurohashami.realtorconnect.entity.user.User;
 import com.makurohashami.realtorconnect.repository.ConfirmationTokenRepository;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class ConfirmationTokenService {
 
-    private final UserConfiguration userConfiguration;
     private final ConfirmationTokenRepository tokenRepository;
 
     @Transactional
@@ -49,15 +44,6 @@ public class ConfirmationTokenService {
     @Transactional
     public void deleteByUserId(Long userId) {
         tokenRepository.deleteByUserId(userId);
-    }
-
-    @Transactional
-    @Scheduled(cron = "${user.scheduler.delete-unused-tokens-cron}")
-    protected void deleteOldTokens() {
-        Instant time = ZonedDateTime.now()
-                .minusDays(userConfiguration.getTokenTtlInDays())
-                .toInstant();
-        tokenRepository.deleteAllByCreatedAtBefore(time);
     }
 
 }

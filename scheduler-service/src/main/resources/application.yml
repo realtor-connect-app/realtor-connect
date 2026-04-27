@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: scheduler-service
+
+server:
+  port: 8082
+
+management:
+  show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable:
+      jvm: true
+      system: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: ${management.show-values}
+    configprops:
+      show-values: ${management.show-values}
+
+scheduler:
+  task-pool-size: 10
+  thread-name-prefix: rc-scheduled-thread-
+
+user:
+  scheduler:
+    delete-unverified-users-cron: "* * */1 * * *" # every hour
+    delete-unused-tokens-cron: "* * */1 * * *" # every hour
+
+realtor:
+  scheduler:
+    reset-plan-cron: "1 0 0 * * *" # every day at 00:00:01 AM
+    send-email-when-premium-expires-cron: "0 0 10 * * *" # every day at 10 AM
+
+real-estate:
+  scheduler:
+    check-called: 60000 # every minute

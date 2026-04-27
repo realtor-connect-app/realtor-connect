@@ -1,7 +1,6 @@
 package com.makurohashami.realtorconnect.service.user;
 
 import com.makurohashami.realtorconnect.annotation.Loggable;
-import com.makurohashami.realtorconnect.config.UserConfiguration;
 import com.makurohashami.realtorconnect.dto.file.FileUploadResponse;
 import com.makurohashami.realtorconnect.dto.user.ChangePasswordDto;
 import com.makurohashami.realtorconnect.dto.user.UserAddDto;
@@ -23,7 +22,6 @@ import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException
 import com.makurohashami.realtorconnect.util.exception.ValidationFailedException;
 import com.makurohashami.realtorconnect.util.validator.Validator;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +35,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +58,6 @@ public class UserService {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final UserConfiguration userConfiguration;
     private final EmailService emailService;
     private final ConfirmationTokenService confirmationTokenService;
     private final PermissionService permissionService;
@@ -165,15 +161,6 @@ public class UserService {
         user.setEmailVerified(true);
         confirmationTokenService.deleteToken(token);
         return user.getEmailVerified();
-    }
-
-    @Transactional
-    @Scheduled(cron = "${user.scheduler.delete-unverified-users-cron}")
-    protected void deleteUnverifiedUsers() {
-        Instant time = ZonedDateTime.now()
-                .minusDays(userConfiguration.getTimeToVerifyEmailInDays())
-                .toInstant();
-        userRepository.deleteAllByCreatedAtIsBeforeAndEmailVerifiedFalse(time);
     }
 
     @Transactional

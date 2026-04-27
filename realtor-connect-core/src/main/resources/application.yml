@@ -58,11 +58,6 @@ network:
   verifyEmailUrl: ${network.hostname}/users/verifyEmail/
   defaultAvatarUrl: https://res.cloudinary.com/dhseztjx1/image/upload/v1711873406/realtor-connect-common/logos/realtor_connect_logo_jpg.jpg
 
-scheduler:
-  enabled: ${SCHEDULER_ENABLED:true}
-  task-pool-size: 10
-  thread-name-prefix: rc-scheduled-thread-
-
 openapi:
   title: Realtor Connect
   version: 1.0
@@ -109,9 +104,6 @@ cloudinary:
 user:
   timeToVerifyEmailInDays: 7
   tokenTtlInDays: 7
-  scheduler:
-    delete-unverified-users-cron: "* * */1 * * *" # every hour
-    delete-unused-tokens-cron: "* * */1 * * *" # every hour
 
 realtor:
   plan-configuration:
@@ -120,14 +112,9 @@ realtor:
     premium:
       maxPublicRealEstates: 25
   daysToNotifyExpiresPremium: [ 1, 7 ]
-  scheduler:
-    reset-plan-cron: "1 0 0 * * *" # every day at 00:00:01 AM
-    send-email-when-premium-expires-cron: "0 0 10 * * *" # every day at 10 AM
 
 real-estate:
   daysForExpireCalled: 14
-  scheduler:
-    check-called: 60000 # every minute
   photo:
     maxPhotosCount: 24
 
