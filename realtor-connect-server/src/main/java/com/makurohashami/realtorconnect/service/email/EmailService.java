@@ -5,6 +5,8 @@ import com.makurohashami.realtorconnect.email.model.EmailTemplate;
 import com.makurohashami.realtorconnect.entity.realtor.Realtor;
 import com.makurohashami.realtorconnect.entity.user.User;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ public class EmailService {
 
     @Value("${network.verifyEmailUrl}")
     private String verifyEmailUrl;
+
+    private static final DateTimeFormatter EMAIL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
 
     private final KafkaEmailProducer kafkaEmailProducer;
 
@@ -48,7 +52,7 @@ public class EmailService {
                 .params(Map.of(
                         "name", realtor.getName(),
                         "durationInMonths", durationInMonths,
-                        "expiresAt", realtor.getPremiumExpiresAt()
+                        "expiresAt", EMAIL_DATE_FORMATTER.format(realtor.getPremiumExpiresAt())
                 ))
                 .build()
         );
@@ -63,7 +67,7 @@ public class EmailService {
                 .params(Map.of(
                         "name", realtor.getName(),
                         "daysLeft", daysLeft,
-                        "expiresAt", realtor.getPremiumExpiresAt()
+                        "expiresAt", EMAIL_DATE_FORMATTER.format(realtor.getPremiumExpiresAt())
                 ))
                 .build()
         );

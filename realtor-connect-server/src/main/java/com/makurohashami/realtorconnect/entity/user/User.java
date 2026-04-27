@@ -55,7 +55,7 @@ public class User implements UserDetails {
     private Boolean blocked;
     private Instant lastLogin;
     private Boolean emailVerified;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private ConfirmationToken confirmationToken;
     @CreatedDate
     @Column(name = "created_at", updatable = false)

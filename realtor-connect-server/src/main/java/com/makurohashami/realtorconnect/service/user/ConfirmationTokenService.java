@@ -26,9 +26,12 @@ public class ConfirmationTokenService {
 
     @Transactional
     public UUID createToken(User user) {
-        return tokenRepository
-                .save(ConfirmationToken.builder().user(user).build())
-                .getToken();
+        ConfirmationToken token = ConfirmationToken.builder()
+                .user(user)
+                .build();
+        ConfirmationToken savedToken = tokenRepository.save(token);
+        user.setConfirmationToken(savedToken);
+        return savedToken.getToken();
     }
 
     @Transactional(readOnly = true)

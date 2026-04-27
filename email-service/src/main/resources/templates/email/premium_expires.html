@@ -85,7 +85,7 @@
             <p>Dear <span th:text="${name}">Realtor</span>,</p>
             <p>Your premium subscription will expire in <span th:text="${daysLeft}">-1</span> <span
                     th:if="${daysLeft == 1}">day</span><span th:if="${daysLeft != 1}">days</span> at: <b><span
-                    th:text="${#dates.format(expiresAt, 'yyyy-MM-dd HH:mm:ss')}">time</span></b> by UTC.</p>
+                    th:text="${expiresAt}">time</span></b> by UTC.</p>
             <p>All your real estates will be made private. To renew your subscription, contact the administration.</p>
             <p>Best regards,<br>Realtor Connect.</p>
         </div>
