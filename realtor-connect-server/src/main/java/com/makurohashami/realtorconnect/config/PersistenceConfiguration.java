@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.config;
 
+import java.util.Optional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -15,7 +16,14 @@ public class PersistenceConfiguration {
 
     @Bean
     AuditorAware<String> auditorProvider() {
-        return () -> SecurityContextHolder.getContext().getAuthentication().getName().describeConstable();
+        return this::getUsername;
+    }
+
+    private Optional<String> getUsername() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return Optional.of("anonymousUser");
+        }
+        return SecurityContextHolder.getContext().getAuthentication().getName().describeConstable();
     }
 
 }
