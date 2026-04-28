@@ -30,7 +30,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Auth Controller", description = "Authentication endpoints")
 public class AuthController {
 

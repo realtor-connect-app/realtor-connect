@@ -26,7 +26,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Contact Controller", description = "Allows you manage your own contacts, and see other's contacts")
 public class ContactController {
 

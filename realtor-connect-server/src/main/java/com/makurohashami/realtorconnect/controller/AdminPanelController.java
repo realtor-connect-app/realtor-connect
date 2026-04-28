@@ -31,7 +31,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/admin-panel", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/admin-panel", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Admin Panel", description = "Endpoints for admins")
 @PreAuthorize("hasAuthority('ACCESS_TO_ADMIN_PANEL')")
 public class AdminPanelController {

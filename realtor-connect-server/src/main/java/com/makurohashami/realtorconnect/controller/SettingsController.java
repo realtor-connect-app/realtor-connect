@@ -22,7 +22,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/settings", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/settings", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Settings Controller", description = "Get info about current app settings")
 public class SettingsController {
 

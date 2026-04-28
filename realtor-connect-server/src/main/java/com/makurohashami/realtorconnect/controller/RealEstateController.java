@@ -32,7 +32,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Real Estate Controller", description = "Allows you manage your own real estates, and see other's real estates")
 public class RealEstateController {
 

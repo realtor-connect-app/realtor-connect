@@ -36,7 +36,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @Validated
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "User Controller", description = "Allows you manage your own information")
 public class UserController {
 

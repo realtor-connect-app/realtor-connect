@@ -31,7 +31,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/realtors/real-estates", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/realtors/real-estates", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Real Estate Photo Controller", description = "Allows you manage your own real estates photos, and see other's real estates photos")
 public class RealEstatePhotoController {
 
