@@ -16,12 +16,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RequiredArgsConstructor
 public class EmailProcessorService {
 
@@ -33,6 +36,7 @@ public class EmailProcessorService {
     private final EmailSenderService emailSenderService;
     private final EmailConfiguration emailConfiguration;
     private final MeterRegistry meterRegistry;
+    private final EmailProcessorService proxy;
 
     public void addToQueue(EmailMessage emailMessage) {
         if (shuttingDown.get()) {
@@ -47,15 +51,15 @@ public class EmailProcessorService {
     @PostConstruct
     public void init() {
         Gauge.builder("email.processor.queue.size", emailQueue::size).register(meterRegistry);
-        sentCounter = Counter.builder("email.processor.count").tag("type", "SENT").register(meterRegistry);
-        failedCounter = Counter.builder("email.processor.count").tag("type", "FAILED").register(meterRegistry);
+        sentCounter = Counter.builder("email.processor.count").tag("status", "SENT").register(meterRegistry);
+        failedCounter = Counter.builder("email.processor.count").tag("status", "FAILED").register(meterRegistry);
     }
 
     @PreDestroy
     public void shutdown() {
         log.info("Graceful shutdown started for email processor. Remaining emails: {}", emailQueue.size());
         shuttingDown.set(true);
-        processBatch(emailQueue.size());
+        proxy.processBatch(emailQueue.size());
         log.info("Email processor graceful shutdown completed. Queue is empty");
     }
 
@@ -64,7 +68,7 @@ public class EmailProcessorService {
         if (shuttingDown.get()) {
             return;
         }
-        processBatch(emailConfiguration.getProcessor().getBatchSize());
+        proxy.processBatch(emailConfiguration.getProcessor().getBatchSize());
     }
 
     @Timed(value = "email.processor.service", histogram = true)
