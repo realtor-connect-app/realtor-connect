@@ -66,6 +66,10 @@ openapi:
   version: 1.0
   description: It is a tool that gives you, as a realtor, the ability to store your own properties, easily manage them, and share them with potential clients. In turn, users can easily search for the properties they want and communicate with realtors.
 
+springdoc:
+  swagger-ui:
+    document-title: ${openapi.title}
+
 files:
   client: ${CDN_CLIENT:placeholder}
   allowedContentTypes: [ image/jpeg, image/png ]
