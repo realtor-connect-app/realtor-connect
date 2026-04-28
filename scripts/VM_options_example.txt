@@ -1,0 +1,5 @@
+-Dserver.port=
+-Dspring.application.name=operational-service|email-service|user-service|real-estate-service
+-Dspring.cloud.config.profile=local
+-Dspring.config.import=configserver:http://localhost:8888
+-Dspring.cloud.config.label=main
