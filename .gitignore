@@ -38,3 +38,7 @@ out/
 
 # Ignore Gradle build output directory
 build
+
+# k6 load-test outputs
+load-tests/results/*
+!load-tests/results/.gitkeep

@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 FROM eclipse-temurin:17-jdk AS build
 
 ARG MODULE
@@ -5,7 +7,8 @@ ARG MODULE
 WORKDIR /workspace
 COPY . .
 
-RUN chmod +x ./gradlew \
+RUN --mount=type=cache,target=/root/.gradle \
+    chmod +x ./gradlew \
     && ./gradlew ":${MODULE}:bootJar" --no-daemon \
     && JAR_FILE="$(find "${MODULE}/build/libs" -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' | head -n 1)" \
     && cp "${JAR_FILE}" /workspace/app.jar

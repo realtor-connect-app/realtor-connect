@@ -8,3 +8,4 @@ log
 *.iml
 out
 .DS_Store
+load-tests/results
