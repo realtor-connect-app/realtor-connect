@@ -10,7 +10,3 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
-
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += ['-parameters']
-}

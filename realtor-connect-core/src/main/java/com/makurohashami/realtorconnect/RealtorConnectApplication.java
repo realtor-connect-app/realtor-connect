@@ -8,11 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
 @SpringBootApplication
-public class SchedulerServiceApplication {
+public class RealtorConnectApplication {
 
     public static void main(String[] args) {
         changeDefaultTimeZone();
-        SpringApplication.run(SchedulerServiceApplication.class, args).getEnvironment();
+        SpringApplication.run(RealtorConnectApplication.class, args);
     }
 
     private static void changeDefaultTimeZone() {
