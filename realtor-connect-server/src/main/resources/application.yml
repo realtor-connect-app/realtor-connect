@@ -58,7 +58,7 @@ security.jwt:
 
 network:
   hostname: ${APP_DOMAIN:http://localhost:${server.port}}
-  verifyEmailUrl: ${network.hostname}/users/verifyEmail/
+  verifyEmailUrl: ${network.hostname}/api/users/verifyEmail/
   defaultAvatarUrl: https://res.cloudinary.com/dhseztjx1/image/upload/v1711873406/realtor-connect-common/logos/realtor_connect_logo_jpg.jpg
 
 openapi:
