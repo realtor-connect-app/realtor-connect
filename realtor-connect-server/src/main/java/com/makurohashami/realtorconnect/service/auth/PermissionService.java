@@ -9,6 +9,8 @@ import com.makurohashami.realtorconnect.repository.ContactRepository;
 import com.makurohashami.realtorconnect.repository.RealEstatePhotoRepository;
 import com.makurohashami.realtorconnect.repository.RealEstateRepository;
 import com.makurohashami.realtorconnect.repository.UserRepository;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +61,8 @@ public class PermissionService {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isCurrentHasPermission(Permission permission) {
         return SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -66,6 +70,8 @@ public class PermissionService {
                 .contains(new SimpleGrantedAuthority(permission.name()));
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isSameUser(long id) {
         return proxy.getUser(getCurrentUsername())
                 .orElse(User.builder().id(-1L).build())
@@ -73,21 +79,29 @@ public class PermissionService {
                 .equals(id);
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isRealEstateOwner(long realEstateId) {
         Optional<RealEstate> realEstate = proxy.getRealEstate(realEstateId);
         return realEstate.isPresent() && isSameUser(realEstate.get().getRealtor().getId());
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isContactOwner(long contactId) {
         Optional<Contact> contact = proxy.getContact(contactId);
         return contact.isPresent() && isSameUser(contact.get().getRealtor().getId());
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isRealEstatePublic(long realEstateId) {
         Optional<RealEstate> realEstate = proxy.getRealEstate(realEstateId);
         return realEstate.isPresent() && !realEstate.get().isPrivate();
     }
 
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public boolean isRealEstatePhotoOwner(long realEstatePhotoId) {
         Optional<RealEstatePhoto> photo = proxy.getPhoto(realEstatePhotoId);
         return photo.isPresent() && isSameUser(photo.get().getRealEstate().getRealtor().getId());

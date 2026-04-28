@@ -213,8 +213,10 @@ services:
       - gateway
     environment:
       BASE_URL: http://gateway:8080
+      MAILHOG_URL: http://mailhog:8025
       K6_VUS: 10
       K6_DURATION: 1m
+      K6_CREATE_EVERY: 3
     command: run /scripts/smoke.js
     volumes:
       - ./load-tests/k6:/scripts:ro

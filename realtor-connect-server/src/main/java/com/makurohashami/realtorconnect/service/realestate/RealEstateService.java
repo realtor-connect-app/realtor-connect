@@ -18,6 +18,8 @@ import com.makurohashami.realtorconnect.service.realtor.RealtorService;
 import com.makurohashami.realtorconnect.specification.RealEstateSpecifications;
 import com.makurohashami.realtorconnect.util.exception.ActionNotAllowedException;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +41,6 @@ public class RealEstateService {
 
     private final RealEstateMapper realEstateMapper;
     private final RealEstateRepository realEstateRepository;
-    private final RealEstateConfiguration realEstateConfiguration;
-
     private final RealtorConfiguration realtorConfiguration;
     private final RealtorRepository realtorRepository;
 
@@ -49,6 +49,8 @@ public class RealEstateService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public RealEstateFullDto create(long realtorId, RealEstateAddDto realEstateDto) {
         Realtor realtor = realtorRepository.findById(realtorId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(RealtorService.NOT_FOUND_BY_ID_MSG, realtorId)));
@@ -66,6 +68,8 @@ public class RealEstateService {
     @RealEstatesPhotoFiltered
     @Transactional(readOnly = true)
     @Cacheable(value = "getRealEstateDto", key = "#realEstateId")
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public RealEstateDto readShortById(long realEstateId) {
         return realEstateMapper.toDto(realEstateRepository.findById(realEstateId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstateId))));
@@ -73,6 +77,8 @@ public class RealEstateService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getRealEstateFullDto", key = "#realEstateId")
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public RealEstateFullDto readFullById(long realEstateId) {
         return realEstateMapper.toFullDto(realEstateRepository.findById(realEstateId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstateId)))
@@ -83,6 +89,8 @@ public class RealEstateService {
     @RealEstatesPhotoFiltered
     @Transactional(readOnly = true)
     @Cacheable(value = "getListRealEstateDto", key = "#filter+'-'+#pageable")
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public Page<RealEstateDto> readAllShorts(RealEstateFilter filter, Pageable pageable) {
         Specification<RealEstate> spec = RealEstateSpecifications.withFilter(filter);
         return realEstateRepository.findAll(spec, pageable).map(realEstateMapper::toDto);
@@ -90,12 +98,16 @@ public class RealEstateService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getListRealEstateFullDto", key = "#filter+'-'+#pageable")
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public Page<RealEstateFullDto> readAllFulls(RealEstateFilter filter, Pageable pageable) {
         Specification<RealEstate> spec = RealEstateSpecifications.withFilter(filter);
         return realEstateRepository.findAll(spec, pageable).map(realEstateMapper::toFullDto);
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public RealEstateFullDto update(long realEstateId, RealEstateAddDto realEstateDto) {
         RealEstate toUpdate = realEstateRepository.findById(realEstateId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstateId)));
@@ -111,6 +123,8 @@ public class RealEstateService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public void delete(long realEstateId) {
         Optional<RealEstate> optionalRealEstate = realEstateRepository.findById(realEstateId);
         if (optionalRealEstate.isPresent()) {
@@ -124,6 +138,8 @@ public class RealEstateService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public boolean updateVerified(long realEstateId, boolean verified) {
         RealEstate realEstate = realEstateRepository.findById(realEstateId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstateId)));
@@ -132,6 +148,8 @@ public class RealEstateService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstate.service")
+    @Timed(value = "realtorconnect.realEstate.service", histogram = true)
     public boolean updateCalled(long realEstateId, boolean called) {
         RealEstate realEstate = realEstateRepository.findById(realEstateId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstateId)));

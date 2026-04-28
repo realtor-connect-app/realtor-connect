@@ -14,6 +14,8 @@ import com.makurohashami.realtorconnect.service.email.EmailService;
 import com.makurohashami.realtorconnect.service.user.ConfirmationTokenService;
 import com.makurohashami.realtorconnect.specification.RealtorFilterSpecifications;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -40,6 +42,8 @@ public class RealtorService {
     private final ConfirmationTokenService tokenService;
 
     @Transactional
+    @Counted(value = "realtorconnect.realtor.service")
+    @Timed(value = "realtorconnect.realtor.service", histogram = true)
     public RealtorFullDto create(RealtorAddDto dto) {
         Realtor realtor = realtorRepository.save(realtorMapper.toEntity(dto));
         emailService.sendVerifyEmail(realtor, tokenService.createToken(realtor).toString());
@@ -48,6 +52,8 @@ public class RealtorService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getRealtorFullDto", key = "#id")
+    @Counted(value = "realtorconnect.realtor.service")
+    @Timed(value = "realtorconnect.realtor.service", histogram = true)
     public RealtorFullDto readFullById(long id) {
         return realtorMapper.toFullDto(realtorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, id))));
@@ -56,6 +62,8 @@ public class RealtorService {
     @ContactsFiltered
     @Transactional(readOnly = true)
     @Cacheable(value = "getRealtorDto", key = "#id")
+    @Counted(value = "realtorconnect.realtor.service")
+    @Timed(value = "realtorconnect.realtor.service", histogram = true)
     public RealtorDto readShortById(long id) {
         return realtorMapper.toDto(realtorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, id))));
@@ -63,12 +71,16 @@ public class RealtorService {
 
     @ContactsFiltered
     @Cacheable(value = "getListRealtorDto", key = "#filter+'-'+#pageable")
+    @Counted(value = "realtorconnect.permission.service")
+    @Timed(value = "realtorconnect.permission.service", histogram = true)
     public Page<RealtorDto> getAllShorts(RealtorFilter filter, Pageable pageable) {
         Specification<Realtor> spec = RealtorFilterSpecifications.withFilter(filter);
         return realtorRepository.findAll(spec, pageable).map(realtorMapper::toDto);
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realtor.service")
+    @Timed(value = "realtorconnect.realtor.service", histogram = true)
     public RealtorFullDto update(long id, RealtorAddDto dto) {
         Realtor toUpdate = realtorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, id)));
@@ -81,6 +93,8 @@ public class RealtorService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realtor.service")
+    @Timed(value = "realtorconnect.realtor.service", histogram = true)
     public Instant givePremiumToRealtor(long id, short durationInMonths) {
         Realtor realtor = realtorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, id)));

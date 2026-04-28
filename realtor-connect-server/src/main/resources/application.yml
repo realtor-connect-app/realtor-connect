@@ -42,6 +42,12 @@ management:
       jvm: true
       system: true
       http: true
+      jdbc: true
+    data:
+      repository:
+        autotime:
+          enabled: true
+          percentiles-histogram: true
   endpoints:
     web:
       exposure:

@@ -17,6 +17,8 @@ import com.makurohashami.realtorconnect.util.exception.ActionNotAllowedException
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
 import com.makurohashami.realtorconnect.util.exception.ValidationFailedException;
 import com.makurohashami.realtorconnect.util.validator.Validator;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -54,6 +56,8 @@ public class RealEstatePhotoService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstatePhoto.service")
+    @Timed(value = "realtorconnect.realEstatePhoto.service", histogram = true)
     public List<RealEstatePhotoDto> create(long realEstateId, Set<MultipartFile> photosToAdd) {
         validatePhotos(photosToAdd);
         RealEstate realEstate = realEstateRepository.findById(realEstateId)
@@ -100,6 +104,8 @@ public class RealEstatePhotoService {
     @RealEstatesPhotoFiltered
     @Transactional(readOnly = true)
     @Cacheable(value = "getListPhotoDto", key = "#realEstateId")
+    @Counted(value = "realtorconnect.realEstatePhoto.service")
+    @Timed(value = "realtorconnect.realEstatePhoto.service", histogram = true)
     public List<RealEstatePhotoDto> readAll(long realEstateId) {
         return realEstatePhotoMapper.toListDto(
                 realEstatePhotoRepository.findAllByRealEstateId(realEstateId)
@@ -107,6 +113,8 @@ public class RealEstatePhotoService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstatePhoto.service")
+    @Timed(value = "realtorconnect.realEstatePhoto.service", histogram = true)
     public RealEstatePhotoDto update(long realEstatePhotoId, RealEstatePhotoUpdateDto photo) {
         RealEstatePhoto toUpdate = realEstatePhotoRepository.findById(realEstatePhotoId)
                 .orElseThrow(() -> new ResourceNotFoundException(getExMessage(realEstatePhotoId)));
@@ -114,6 +122,8 @@ public class RealEstatePhotoService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.realEstatePhoto.service")
+    @Timed(value = "realtorconnect.realEstatePhoto.service", histogram = true)
     public List<RealEstatePhotoDto> customiseOrder(long realEstateId, LinkedHashSet<Long> idsOrder) {
         Map<Long, RealEstatePhoto> photosById = realEstatePhotoRepository.findAllByRealEstateId(realEstateId)
                 .stream().collect(Collectors.toMap(RealEstatePhoto::getId, Function.identity()));

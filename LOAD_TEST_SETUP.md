@@ -39,6 +39,21 @@ Override the default load:
 K6_VUS=50 K6_DURATION=5m docker compose -f docker-compose.loadtest.yml --profile load run --rm k6
 ```
 
+The k6 script covers the common user-facing path:
+
+- browse public realtors, real estates, and settings;
+- register a realtor;
+- verify the realtor email through MailHog;
+- log in and read the current user;
+- read the realtor's private inventory;
+- periodically create a private real estate and mark it called.
+
+Additional k6 metrics are emitted for auth success rate, email verification rate, realtor bootstrap duration, and real-estate creation duration. Control write frequency with `K6_CREATE_EVERY`:
+
+```bash
+K6_CREATE_EVERY=10 docker compose -f docker-compose.loadtest.yml --profile load run --rm k6
+```
+
 ## Local Config
 
 The load-test stack starts `config-server` with the `native` profile and reads config files from `docker/config/local`.

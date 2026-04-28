@@ -21,6 +21,8 @@ import com.makurohashami.realtorconnect.util.exception.ActionNotAllowedException
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
 import com.makurohashami.realtorconnect.util.exception.ValidationFailedException;
 import com.makurohashami.realtorconnect.util.validator.Validator;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,8 @@ public class UserService {
     @Async
     @Transactional
     @Loggable.Exclude
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public void updateLastLogin(Long id) {
         userRepository.updateLastLogin(id, Instant.now());
     }
@@ -79,6 +83,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public UserFullDto create(UserAddDto dto, Role role) {
         User user = userMapper.toEntity(dto);
         user.setRole(role);
@@ -89,6 +95,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getUser", key = "#id")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public User findById(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, id)));
@@ -96,18 +104,24 @@ public class UserService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getUserDto", key = "#id")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public UserDto readById(long id) {
         return userMapper.toDto(findById(id));
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getUserFullDto", key = "#id")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public UserFullDto readFullById(long id) {
         return userMapper.toFullDto(findById(id));
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getUserFullDto", key = "#username")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public UserFullDto readFullByUsername(String username) {
         return userMapper.toFullDto(userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_USERNAME_MSG, username))));
@@ -115,6 +129,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getListUserFullDto", key = "#filter+'-'+#pageable")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public Page<UserFullDto> readAllFulls(UserFilter filter, Pageable pageable) {
         Specification<User> spec = UserFilterSpecifications.withFilter(filter);
         return userRepository.findAll(spec, pageable).map(userMapper::toFullDto);
@@ -122,18 +138,24 @@ public class UserService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getListUserFullDto", key = "#filter")
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public List<UserFullDto> readAllFulls(UserFilter filter) {
         Specification<User> spec = UserFilterSpecifications.withFilter(filter);
         return userMapper.toListFullDto(userRepository.findAll(spec));
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public UserFullDto update(long id, UserAddDto dto) {
         User toUpdate = proxy.findById(id);
         return userMapper.toFullDto(userRepository.save(userMapper.update(toUpdate, dto)));
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public void delete(long id) {
         User user = proxy.findById(id);
         boolean canDeleteAdmins = permissionService.isCurrentHasPermission(Permission.MANAGE_ADMINS);
@@ -146,6 +168,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public boolean updateBlocked(long id, boolean blocked) {
         User user = proxy.findById(id);
         if (user.getRole() == ADMIN || user.getRole() == CHIEF_ADMIN) {
@@ -156,6 +180,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public boolean verifyEmail(UUID token) {
         User user = confirmationTokenService.findUserByToken(token);
         user.setEmailVerified(true);
@@ -164,6 +190,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public String setAvatar(long id, MultipartFile avatar) {
         User user = proxy.findById(id);
         validateAvatar(avatar);
@@ -174,6 +202,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public void deleteAvatar(long id) {
         User user = proxy.findById(id);
         fileService.deleteFile(user.getAvatarId());
@@ -193,6 +223,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public boolean resetPassword(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ActionNotAllowedException("The user with the same email is not registered"));
@@ -205,6 +237,8 @@ public class UserService {
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.user.service")
+    @Timed(value = "realtorconnect.user.service", histogram = true)
     public boolean changePassword(ChangePasswordDto changePasswordDto) {
         if (!changePasswordDto.passwordsMatch()) {
             throw new ActionNotAllowedException("Passwords do not match");

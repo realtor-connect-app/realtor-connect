@@ -1,6 +1,7 @@
 package com.makurohashami.realtorconnect.email.service;
 
 import com.makurohashami.realtorconnect.email.model.EmailMessage;
+import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class EmailSenderService {
     private final SpringTemplateEngine springTemplateEngine;
 
     @Async("emailExecutor")
+    @Counted(value = "email.sender.service")
     @Timed(value = "email.sender.service", histogram = true)
     public CompletableFuture<Boolean> send(EmailMessage emailMessage) {
         boolean success = true;

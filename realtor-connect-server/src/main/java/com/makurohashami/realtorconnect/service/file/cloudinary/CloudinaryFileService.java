@@ -6,6 +6,8 @@ import com.cloudinary.utils.ObjectUtils;
 import com.makurohashami.realtorconnect.config.CloudinaryConfiguration.CloudinaryEnabled;
 import com.makurohashami.realtorconnect.dto.file.FileUploadResponse;
 import com.makurohashami.realtorconnect.service.file.FileService;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +27,8 @@ public class CloudinaryFileService implements FileService {
     private final Cloudinary cloudinary;
 
     @Override
+    @Counted(value = "realtorconnect.file.service")
+    @Timed(value = "realtorconnect.file.service", histogram = true)
     public FileUploadResponse uploadFile(MultipartFile file, Map<String, Object> params) {
         try {
             var result = cloudinary.uploader().upload(file.getBytes(), params);
@@ -40,6 +44,8 @@ public class CloudinaryFileService implements FileService {
 
     @Async
     @Override
+    @Counted(value = "realtorconnect.file.service")
+    @Timed(value = "realtorconnect.file.service", histogram = true)
     public void deleteFile(String path) {
         try {
             var params = ObjectUtils.asMap("async", "true");
@@ -51,6 +57,8 @@ public class CloudinaryFileService implements FileService {
 
     @Async
     @Override
+    @Counted(value = "realtorconnect.file.service")
+    @Timed(value = "realtorconnect.file.service", histogram = true)
     public void deleteFolder(String folder) {
         try {
             cloudinary.api().deleteResourcesByPrefix(folder, ObjectUtils.emptyMap());

@@ -19,6 +19,11 @@ management:
     enable:
       jvm: true
       system: true
+    data:
+      repository:
+        autotime:
+          enabled: true
+          percentiles-histogram: true
   endpoints:
     web:
       exposure:

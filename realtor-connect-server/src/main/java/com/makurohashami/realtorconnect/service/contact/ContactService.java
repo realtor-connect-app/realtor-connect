@@ -6,6 +6,8 @@ import com.makurohashami.realtorconnect.entity.realtor.Contact;
 import com.makurohashami.realtorconnect.mapper.ContactMapper;
 import com.makurohashami.realtorconnect.repository.ContactRepository;
 import com.makurohashami.realtorconnect.util.exception.ResourceNotFoundException;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class ContactService {
     private final ContactRepository contactRepository;
 
     @Transactional
+    @Counted(value = "realtorconnect.contact.service")
+    @Timed(value = "realtorconnect.contact.service", histogram = true)
     public ContactDto create(long realtorId, ContactDto contactDto) {
         return contactMapper.toDto(contactRepository.save(
                 contactMapper.toEntity(contactDto, realtorId)));
@@ -32,6 +36,8 @@ public class ContactService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getContactDto", key = "#contactId")
+    @Counted(value = "realtorconnect.contact.service")
+    @Timed(value = "realtorconnect.contact.service", histogram = true)
     public ContactDto readById(long contactId) {
         return contactMapper.toDto(contactRepository.findById(contactId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, contactId))));
@@ -39,11 +45,15 @@ public class ContactService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "getListContactDto", key = "#realtorId")
+    @Counted(value = "realtorconnect.contact.service")
+    @Timed(value = "realtorconnect.contact.service", histogram = true)
     public List<ContactDto> readAll(long realtorId) {
         return contactMapper.toListDto(contactRepository.findAllByRealtorId(realtorId));
     }
 
     @Transactional
+    @Counted(value = "realtorconnect.contact.service")
+    @Timed(value = "realtorconnect.contact.service", histogram = true)
     public ContactDto update(long contactId, ContactDto contactDto) {
         Contact toUpdate = contactRepository.findById(contactId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format(NOT_FOUND_BY_ID_MSG, contactId)));
