@@ -123,27 +123,27 @@ cache:
   enabled: true
   settings:
     # User
-    getUser: 20000
-    getUserDto: 20000
-    getUserFullDto: 20000
-    getListUserFullDto: 10000
+    getUser: 1000
+    getUserDto: 1000
+    getUserFullDto: 1000
+    getListUserFullDto: 1000
     # Realtor
-    getRealtorDto: 20000
-    getRealtorFullDto: 20000
-    getListRealtorDto: 20000
+    getRealtorDto: 1000
+    getRealtorFullDto: 1000
+    getListRealtorDto: 2000
     # Contact
-    getContact: 10000
-    getContactDto: 10000
-    getListContactDto: 10000
+    getContact: 3000
+    getContactDto: 3000
+    getListContactDto: 3000
     # Real Estate
-    getRealEstate: 20000
-    getRealEstateDto: 20000
-    getRealEstateFullDto: 20000
-    getListRealEstateDto: 10000
-    getListRealEstateFullDto: 10000
+    getRealEstate: 3000
+    getRealEstateDto: 3000
+    getRealEstateFullDto: 3000
+    getListRealEstateDto: 3000
+    getListRealEstateFullDto: 3000
     # Real Estate Photo
-    getPhoto: 10000
-    getListPhotoDto: 10000
+    getPhoto: 5000
+    getListPhotoDto: 5000
 
 kafka.topics:
   emails:
