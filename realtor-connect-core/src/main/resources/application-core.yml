@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: realtor-connect
-    time-zone: UTC
   jpa:
     open-in-view: false
     hibernate:
@@ -35,7 +32,14 @@ logging:
     org.flywaydb: info
 
 management:
-  show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
+  show-values: NEVER
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    enable:
+      jvm: true
+      system: true
+      http: true
   endpoints:
     web:
       exposure:
