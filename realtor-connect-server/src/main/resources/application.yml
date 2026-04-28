@@ -65,26 +65,6 @@ openapi:
   title: Realtor Connect
   version: 1.0
   description: It is a tool that gives you, as a realtor, the ability to store your own properties, easily manage them, and share them with potential clients. In turn, users can easily search for the properties they want and communicate with realtors.
-  groups:
-    userAPIs:
-      - /auth/login/**
-      - /auth/current/**
-      - /auth/register/user/**
-      - /users/**
-    realtorAPIs:
-      - /auth/login/**
-      - /auth/current/**
-      - /auth/register/realtor/**
-      - /realtors/**
-      - /users/{id}/avatar
-    adminAPIs:
-      - /auth/login/**
-      - /auth/current/**
-      - /users/**
-      - /admins/**
-      - /admin-panel/**
-    otherAPIs:
-      - /settings/**
 
 files:
   client: ${CDN_CLIENT:placeholder}
