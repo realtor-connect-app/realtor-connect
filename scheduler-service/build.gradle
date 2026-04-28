@@ -9,11 +9,9 @@ apply from: '../common.gradle'
 dependencies {
     implementation project(':realtor-connect-core')
 
-    implementation 'org.flywaydb:flyway-core:9.19.4'
     runtimeOnly 'org.postgresql:postgresql:42.6.0'
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.flywaydb:flyway-core:9.19.4'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
