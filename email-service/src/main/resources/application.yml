@@ -2,7 +2,7 @@ spring:
   application:
     name: email-service
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: email-service
       auto-offset-reset: earliest
@@ -12,7 +12,7 @@ server:
   port: 8090
 
 management:
-  show-values: NEVER
+  show-values: ${ACTUATOR_SHOW_VALUES:NEVER}
   metrics:
     tags:
       application: ${spring.application.name}
@@ -50,8 +50,8 @@ email:
         username: user
         password: user
       network:
-        host: localhost
-        port: 1025
+        host: ${EMAIL_DEBUG_HOST:localhost}
+        port: ${EMAIL_DEBUG_PORT:1025}
   processor:
     processing-delay-ms: 1000
     batch-size: 10

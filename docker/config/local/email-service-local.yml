@@ -1,0 +1,11 @@
+email:
+  debug-mode:
+    enabled: true
+  processor:
+    processing-delay-ms: 1000
+    batch-size: 10
+
+kafka:
+  topics:
+    emails:
+      concurrency: 5

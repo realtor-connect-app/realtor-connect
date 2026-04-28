@@ -1,0 +1,13 @@
+feature:
+  enable:
+    admin-api: false
+    real-estate-api: false
+    scheduler: false
+    settings-api: false
+    user-api: false
+
+files:
+  client: placeholder
+
+cache:
+  enabled: true

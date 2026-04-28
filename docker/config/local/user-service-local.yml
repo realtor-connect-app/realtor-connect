@@ -1,0 +1,7 @@
+feature:
+  enable:
+    admin-api: false
+    real-estate-api: false
+    scheduler: false
+    settings-api: false
+    user-api: true
