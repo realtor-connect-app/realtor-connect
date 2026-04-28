@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jre AS build
+FROM eclipse-temurin:17-jdk AS build
 
 ARG MODULE
 
