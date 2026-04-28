@@ -1,9 +1,11 @@
 spring:
   application:
     name: scheduler-service
+  config:
+    import: "classpath:application-core.yml"
 
 server:
-  port: 8082
+  port: 8081
 
 management:
   show-values: ${ACTUATOR_SHOW_VALUES:NEVER}

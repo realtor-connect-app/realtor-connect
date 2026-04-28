@@ -7,7 +7,7 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${spring.application.name}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/realtor-connect
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -45,9 +45,6 @@ management:
       show-values: ${management.show-values}
     configprops:
       show-values: ${management.show-values}
-
-server:
-  port: 8080
 
 security.jwt:
   token-ttl: 18000000 # 5 hours

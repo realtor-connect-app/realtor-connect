@@ -15,8 +15,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class EmailServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(EmailServiceApplication.class, args);
         changeDefaultTimeZone();
+        SpringApplication.run(EmailServiceApplication.class, args);
     }
 
     private static void changeDefaultTimeZone() {
