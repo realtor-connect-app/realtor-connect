@@ -2,6 +2,7 @@ package com.makurohashami.realtorconnect.controller;
 
 import com.makurohashami.realtorconnect.annotation.security.IsRealEstateOwner;
 import com.makurohashami.realtorconnect.annotation.security.IsRealEstatePhotoOwner;
+import com.makurohashami.realtorconnect.conditions.RealEstateApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.realestate.photo.RealEstatePhotoDto;
 import com.makurohashami.realtorconnect.dto.realestate.photo.RealEstatePhotoUpdateDto;
@@ -12,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +35,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/realtors/real-estates", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Real Estate Photo Controller", description = "Allows you manage your own real estates photos, and see other's real estates photos")
+@Conditional(RealEstateApiEnabled.class)
 public class RealEstatePhotoController {
 
     private final RealEstatePhotoService realEstatePhotoService;

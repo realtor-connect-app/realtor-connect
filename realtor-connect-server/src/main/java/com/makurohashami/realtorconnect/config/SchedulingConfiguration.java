@@ -1,8 +1,10 @@
 package com.makurohashami.realtorconnect.config;
 
+import com.makurohashami.realtorconnect.conditions.SchedulerEnabled;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -14,6 +16,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @Configuration
 @EnableScheduling
 @ConfigurationProperties(prefix = "scheduler")
+@Conditional(SchedulerEnabled.class)
 public class SchedulingConfiguration implements SchedulingConfigurer {
 
     private int taskPoolSize;

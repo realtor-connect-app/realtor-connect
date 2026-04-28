@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.controller;
 
+import com.makurohashami.realtorconnect.conditions.AdminApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.user.UserAddDto;
 import com.makurohashami.realtorconnect.dto.user.UserFilter;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +29,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/admins", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Admin Management Controller", description = "Allows you manage admins")
+@Conditional(AdminApiEnabled.class)
 public class AdminManagementController {
 
     private final UserService userService;

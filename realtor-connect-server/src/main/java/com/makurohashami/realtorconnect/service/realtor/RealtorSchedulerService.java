@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.service.realtor;
 
+import com.makurohashami.realtorconnect.conditions.SchedulerEnabled;
 import com.makurohashami.realtorconnect.config.RealtorConfiguration;
 import com.makurohashami.realtorconnect.entity.realtor.Realtor;
 import com.makurohashami.realtorconnect.entity.realtor.enumeration.SubscriptionType;
@@ -9,9 +10,9 @@ import com.makurohashami.realtorconnect.service.email.EmailService;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Conditional(SchedulerEnabled.class)
 public class RealtorSchedulerService {
 
     private final RealtorRepository realtorRepository;

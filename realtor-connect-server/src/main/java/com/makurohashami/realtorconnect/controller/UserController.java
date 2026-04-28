@@ -1,6 +1,7 @@
 package com.makurohashami.realtorconnect.controller;
 
 import com.makurohashami.realtorconnect.annotation.security.IsSameUser;
+import com.makurohashami.realtorconnect.conditions.UserApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.user.ChangePasswordDto;
 import com.makurohashami.realtorconnect.dto.user.UserAddDto;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +40,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "User Controller", description = "Allows you manage your own information")
+@Conditional(UserApiEnabled.class)
 public class UserController {
 
     private final UserService service;

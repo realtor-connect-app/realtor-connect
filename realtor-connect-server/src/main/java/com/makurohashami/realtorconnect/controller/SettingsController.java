@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.controller;
 
+import com.makurohashami.realtorconnect.conditions.SettingsApiEnabled;
 import com.makurohashami.realtorconnect.config.FileConfiguration;
 import com.makurohashami.realtorconnect.config.RealEstateConfiguration;
 import com.makurohashami.realtorconnect.config.RealtorConfiguration;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/settings", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Settings Controller", description = "Get info about current app settings")
+@Conditional(SettingsApiEnabled.class)
 public class SettingsController {
 
     public final FileConfiguration fileConfiguration;

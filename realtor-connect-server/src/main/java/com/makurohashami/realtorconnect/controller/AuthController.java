@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.controller;
 
+import com.makurohashami.realtorconnect.conditions.UserApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.auth.AuthRequest;
 import com.makurohashami.realtorconnect.dto.auth.AuthResponse;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +34,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Auth Controller", description = "Authentication endpoints")
+@Conditional(UserApiEnabled.class)
 public class AuthController {
 
     private final AuthService authService;

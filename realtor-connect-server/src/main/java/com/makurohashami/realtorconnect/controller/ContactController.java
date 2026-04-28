@@ -2,6 +2,7 @@ package com.makurohashami.realtorconnect.controller;
 
 import com.makurohashami.realtorconnect.annotation.security.IsContactOwner;
 import com.makurohashami.realtorconnect.annotation.security.IsSameRealtor;
+import com.makurohashami.realtorconnect.conditions.UserApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.realtor.ContactDto;
 import com.makurohashami.realtorconnect.service.contact.ContactService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Contact Controller", description = "Allows you manage your own contacts, and see other's contacts")
+@Conditional(UserApiEnabled.class)
 public class ContactController {
 
     private final ContactService service;

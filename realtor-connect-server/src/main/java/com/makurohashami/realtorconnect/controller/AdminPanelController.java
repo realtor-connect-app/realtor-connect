@@ -1,5 +1,6 @@
 package com.makurohashami.realtorconnect.controller;
 
+import com.makurohashami.realtorconnect.conditions.AdminApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.user.UserFilter;
 import com.makurohashami.realtorconnect.dto.user.UserFullDto;
@@ -13,6 +14,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @RequestMapping(value = "/api/admin-panel", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Admin Panel", description = "Endpoints for admins")
 @PreAuthorize("hasAuthority('ACCESS_TO_ADMIN_PANEL')")
+@Conditional(AdminApiEnabled.class)
 public class AdminPanelController {
 
     private final UserService userService;

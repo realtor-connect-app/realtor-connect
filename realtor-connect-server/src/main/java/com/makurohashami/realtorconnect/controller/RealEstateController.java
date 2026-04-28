@@ -3,6 +3,7 @@ package com.makurohashami.realtorconnect.controller;
 import com.makurohashami.realtorconnect.annotation.security.IsRealEstateOwner;
 import com.makurohashami.realtorconnect.annotation.security.IsRealEstatePublic;
 import com.makurohashami.realtorconnect.annotation.security.IsSameRealtor;
+import com.makurohashami.realtorconnect.conditions.RealEstateApiEnabled;
 import com.makurohashami.realtorconnect.dto.apiresponse.ApiSuccess;
 import com.makurohashami.realtorconnect.dto.realestate.RealEstateAddDto;
 import com.makurohashami.realtorconnect.dto.realestate.RealEstateDto;
@@ -12,6 +13,7 @@ import com.makurohashami.realtorconnect.service.realestate.RealEstateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -34,6 +36,7 @@ import static com.makurohashami.realtorconnect.util.ApiResponseUtil.ok;
 @AllArgsConstructor
 @RequestMapping(value = "/api/realtors", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Real Estate Controller", description = "Allows you manage your own real estates, and see other's real estates")
+@Conditional(RealEstateApiEnabled.class)
 public class RealEstateController {
 
     private final RealEstateService service;
