@@ -4,18 +4,18 @@ export function summaryHandler(scenarioName) {
   return function handleSummary(data) {
     const base = `${RESULTS_DIR}/${scenarioName}-${RUN_ID}`;
     const summary = humanSummary(data, scenarioName);
-    const report = {
-      ...data,
-      realtorConnectReport: {
-        scenarioName,
-        runId: RUN_ID,
-        startedAtUtc: RUN_STARTED_AT_UTC,
-      },
-    };
+    // const report = {
+    //   ...data,
+    //   realtorConnectReport: {
+    //     scenarioName,
+    //     runId: RUN_ID,
+    //     startedAtUtc: RUN_STARTED_AT_UTC,
+    //   },
+    // };
 
     return {
       stdout: summary,
-      [`${base}.json`]: JSON.stringify(report, null, 2),
+      // [`${base}.json`]: JSON.stringify(report, null, 2),
       [`${base}-summary.txt`]: summary,
     };
   };
