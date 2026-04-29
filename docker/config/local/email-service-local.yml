@@ -2,10 +2,10 @@ email:
   debug-mode:
     enabled: true
   processor:
-    processing-delay-ms: 1000
-    batch-size: 10
+    processing-delay-ms: 1
+    batch-size: 50
 
 kafka:
   topics:
     emails:
-      concurrency: 5
+      concurrency: 20

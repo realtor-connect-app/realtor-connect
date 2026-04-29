@@ -1,12 +1,22 @@
-import { RESULTS_DIR, RUN_ID } from './config.js';
+import { RESULTS_DIR, RUN_ID, RUN_STARTED_AT_UTC } from './config.js';
 
 export function summaryHandler(scenarioName) {
   return function handleSummary(data) {
     const base = `${RESULTS_DIR}/${scenarioName}-${RUN_ID}`;
+    const summary = humanSummary(data, scenarioName);
+    const report = {
+      ...data,
+      realtorConnectReport: {
+        scenarioName,
+        runId: RUN_ID,
+        startedAtUtc: RUN_STARTED_AT_UTC,
+      },
+    };
+
     return {
-      stdout: humanSummary(data, scenarioName),
-      [`${base}.json`]: JSON.stringify(data, null, 2),
-      [`${base}-summary.txt`]: humanSummary(data, scenarioName),
+      stdout: summary,
+      [`${base}.json`]: JSON.stringify(report, null, 2),
+      [`${base}-summary.txt`]: summary,
     };
   };
 }
@@ -16,6 +26,7 @@ function humanSummary(data, scenarioName) {
   const lines = [
     `Scenario: ${scenarioName}`,
     `Run ID: ${RUN_ID}`,
+    `Started at UTC: ${RUN_STARTED_AT_UTC}`,
     '',
     `HTTP requests: ${value(metrics.http_reqs, 'count')}`,
     `Request rate: ${rate(metrics.http_reqs)}`,

@@ -2,6 +2,7 @@ export const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 export const MAILHOG_URL = __ENV.MAILHOG_URL || 'http://localhost:8025';
 export const RESULTS_DIR = __ENV.RESULTS_DIR || 'load-tests/results';
 export const RUN_ID = __ENV.K6_RUN_ID || `${Date.now()}`;
+export const RUN_STARTED_AT_UTC = __ENV.K6_RUN_STARTED_AT_UTC || new Date().toISOString();
 export const TEST_PREFIX = __ENV.TEST_PREFIX || `loadtest_${RUN_ID}`;
 
 export const DEFAULT_SLA = {

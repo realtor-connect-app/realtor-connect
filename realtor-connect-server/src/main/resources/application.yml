@@ -8,6 +8,9 @@ spring:
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
   jackson:
     date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
     serialization:

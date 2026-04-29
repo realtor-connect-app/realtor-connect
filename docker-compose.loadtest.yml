@@ -63,7 +63,7 @@ services:
       - sh
       - -c
       - |
-        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic emails --partitions 5 --replication-factor 1
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic emails --partitions 20 --replication-factor 1
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

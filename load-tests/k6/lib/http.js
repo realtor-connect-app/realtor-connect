@@ -46,7 +46,18 @@ export function requestParams(tags = {}, params = {}, headers = {}) {
 }
 
 export function strictCheck(response, checks) {
-  const passed = check(response, checks);
+  const safeChecks = {};
+  Object.keys(checks).forEach((name) => {
+    safeChecks[name] = (res) => {
+      try {
+        return Boolean(res) && checks[name](res);
+      } catch (error) {
+        return false;
+      }
+    };
+  });
+
+  const passed = check(response, safeChecks);
   apiFlowSuccessRate.add(passed);
   return passed;
 }
@@ -78,4 +89,3 @@ export function query(params) {
   });
   return parts.length ? `?${parts.join('&')}` : '';
 }
-

@@ -13,7 +13,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
 
     @Bean
     Executor emailExecutor() {
-        return Executors.newFixedThreadPool(10);
+        return Executors.newFixedThreadPool(50);
     }
 
 }

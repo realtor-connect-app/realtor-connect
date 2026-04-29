@@ -5,7 +5,7 @@ This setup runs Realtor Connect as several logical services behind an Nginx gate
 ## Start Environment
 
 ```bash
-docker compose -f docker-compose.loadtest.yml up -d --build
+docker compose -f docker-compose.loadtest.yml up -d --no-build
 ```
 
 Use `--build` only when Java code, Gradle files, or the Dockerfile changed. For repeated experiment runs with the same images, start or rescale services without rebuilding:
@@ -318,6 +318,7 @@ For each instance configuration, run `capacity-public.js` and `capacity-mixed.js
 
 For every run, record:
 
+- UTC start time;
 - instance count;
 - target RPS;
 - achieved RPS;
