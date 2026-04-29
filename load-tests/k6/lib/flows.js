@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { group } from 'k6';
 import { expectCreated, expectOk, hasPageContent } from './checks.js';
+import { envNumber } from './config.js';
 import { realEstatePayload, realEstateSearchQuery, realtorSearchQuery } from './data.js';
 import { apiUrl, authHeaders, content, get, parseJson, postJson, put, query } from './http.js';
 import {
@@ -155,6 +156,52 @@ export function publicCapacityRequest() {
   }
 
   return publicBrowsingSingleRequest();
+}
+
+export function scaledServicesReadRequest() {
+  const userReadPercent = envNumber('USER_READ_PERCENT', 35);
+  const realEstateListPercent = envNumber('REAL_ESTATE_LIST_PERCENT', 50);
+  const choice = Math.random() * 100;
+
+  if (choice < userReadPercent) {
+    const response = get(`/api/realtors${query(realtorSearchQuery())}`, {
+      service: 'user-service',
+      endpoint: 'list_realtors',
+      flow: 'scaled_services_read',
+      operation: 'read',
+      method: 'GET',
+    });
+    const ok = expectOk(response, 'list realtors', hasPageContent);
+    publicBrowsingSuccessRate.add(ok);
+    return ok;
+  }
+
+  if (choice < userReadPercent + realEstateListPercent || knownPublicRealEstateIds.length === 0) {
+    const response = get(`/api/realtors/real-estates${query(realEstateSearchQuery())}`, {
+      service: 'real-estate-service',
+      endpoint: 'list_real_estates',
+      flow: 'scaled_services_read',
+      operation: 'read',
+      method: 'GET',
+    });
+
+    const ok = expectOk(response, 'list real estates', hasPageContent);
+    rememberPublicRealEstateIds(response);
+    publicBrowsingSuccessRate.add(ok);
+    return ok;
+  }
+
+  const realEstateId = knownPublicRealEstateIds[Math.floor(Math.random() * knownPublicRealEstateIds.length)];
+  const response = get(`/api/realtors/real-estates/${realEstateId}`, {
+    service: 'real-estate-service',
+    endpoint: 'real_estate_details',
+    flow: 'scaled_services_read',
+    operation: 'read',
+    method: 'GET',
+  });
+  const ok = expectOk(response, 'real estate details', (res) => Number(res.json('result.id')) === Number(realEstateId));
+  publicBrowsingSuccessRate.add(ok);
+  return ok;
 }
 
 export function realtorInventoryFlow(context) {

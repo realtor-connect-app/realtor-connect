@@ -49,6 +49,7 @@ load-tests/k6/
     summary.js
   scenarios/
     smoke.js
+    capacity-scaled-read.js
     capacity-public.js
     capacity-mixed.js
     stress.js
@@ -69,6 +70,8 @@ Docker Compose runs `load-tests/k6/scenarios/smoke.js` by default. All experimen
 - `RESULTS_DIR`: output directory for JSON and text summaries.
 - `K6_RUN_ID`: optional deterministic run identifier.
 - `TEST_PREFIX`: optional prefix for generated test users and listings.
+- `USER_READ_PERCENT`: for `capacity-scaled-read.js`, percent of requests sent to `user-service`, default `35`.
+- `REAL_ESTATE_LIST_PERCENT`: for `capacity-scaled-read.js`, percent of requests sent to real-estate list search, default `50`. The remaining traffic goes to real-estate details.
 
 Default SLA thresholds:
 
@@ -113,6 +116,34 @@ Optional smoke variables:
 - `SMOKE_ITERATIONS`: number of full smoke runs, default `1`;
 - `SMOKE_VUS`: VUs used to execute shared smoke iterations, default `1`;
 - `SMOKE_MAX_DURATION`: maximum smoke duration, default `2m`.
+
+## Scaled Services Read Capacity Test
+
+Use this as the simplest single scenario for demonstrating horizontal scaling in the diploma experiment.
+
+It is intentionally narrower than `capacity-public.js`: it sends traffic only to the two scalable synchronous API services and excludes `operational-service`, email verification, Kafka, and writes. One k6 iteration performs one HTTP request, so `TARGET_RPS` is also the intended HTTP request rate.
+
+Default mix:
+
+- 35% `GET /api/realtors` -> `user-service`
+- 50% `GET /api/realtors/real-estates` -> `real-estate-service`
+- 15% `GET /api/realtors/real-estates/{id}` -> `real-estate-service`
+
+Recommended fixed-load demonstration run:
+
+```bash
+docker compose -f docker-compose.loadtest.yml --profile load run --rm --no-deps \
+  -e BASE_URL=http://gateway:8080 \
+  -e TARGET_RPS=200 \
+  -e DURATION=6m \
+  -e PRE_ALLOCATED_VUS=120 \
+  -e MAX_VUS=700 \
+  -e USER_READ_PERCENT=35 \
+  -e REAL_ESTATE_LIST_PERCENT=50 \
+  k6 run /scripts/scenarios/capacity-scaled-read.js
+```
+
+If 1 instance still passes easily at `200 RPS`, repeat the same scenario at `250` or `300`. If the k6 container or Docker Desktop becomes unstable, reduce to `150` and use the same value for every instance configuration.
 
 ## Public Capacity Test
 
@@ -291,6 +322,31 @@ docker compose -f docker-compose.loadtest.yml up -d --no-build \
 ```
 
 ## Recommended Experiment Matrix
+
+For a compact diploma demonstration, use `capacity-scaled-read.js` as the main scenario and run it multiple times with the same `TARGET_RPS`.
+
+Recommended first fixed point:
+
+- `TARGET_RPS=200`
+- `DURATION=6m`
+- `PRE_ALLOCATED_VUS=120`
+- `MAX_VUS=700`
+- `USER_READ_PERCENT=35`
+- `REAL_ESTATE_LIST_PERCENT=50`
+
+Run these configurations:
+
+| Config | user-service | real-estate-service | email-service | operational-service | Purpose |
+|---|---:|---:|---:|---:|---|
+| S1 | 1 | 1 | 1 | 1 | baseline |
+| S2 | 2 | 1 | 1 | 1 | show effect of scaling user API only |
+| S3 | 1 | 2 | 1 | 1 | show effect of scaling real-estate API only |
+| S4 | 2 | 2 | 1 | 1 | show combined scaling |
+| S5 | 3 | 3 | 1 | 1 | show whether scaling continues to help |
+
+Keep `operational-service=1`; it owns scheduler behavior. Keep `email-service=1` for this read-only scenario because it is not on the request path.
+
+Use the same k6 command for every row after changing the service scale. Compare achieved RPS, p95/p99 latency, error rate, dropped iterations, and per-service CPU. A useful demonstration point is the first `TARGET_RPS` where S1 is near or above SLA while S4/S5 still pass.
 
 Instance configurations:
 
