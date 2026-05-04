@@ -68,3 +68,4 @@ kafka.topics:
       error-handler:
         delay-ms: 100
         max-attempts: 1
+        dead-letter-topic: emails-dead-letter

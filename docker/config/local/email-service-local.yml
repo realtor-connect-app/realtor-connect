@@ -9,3 +9,5 @@ kafka:
   topics:
     emails:
       concurrency: 20
+      error-handler:
+        dead-letter-topic: emails-dead-letter

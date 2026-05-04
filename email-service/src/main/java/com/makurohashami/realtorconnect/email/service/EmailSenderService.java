@@ -3,12 +3,10 @@ package com.makurohashami.realtorconnect.email.service;
 import com.makurohashami.realtorconnect.email.model.EmailMessage;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -23,10 +21,9 @@ public class EmailSenderService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine springTemplateEngine;
 
-    @Async("emailExecutor")
     @Counted(value = "email.sender.service")
     @Timed(value = "email.sender.service", histogram = true)
-    public CompletableFuture<Boolean> send(EmailMessage emailMessage) {
+    public boolean send(EmailMessage emailMessage) {
         boolean success = true;
         try {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mailSender.createMimeMessage(), true, ENCODING);
@@ -40,7 +37,7 @@ public class EmailSenderService {
             log.error("Error while sending email {} to: {}", emailMessage.getEmailTemplate(), emailMessage.getTo(), ex);
             success = false;
         }
-        return CompletableFuture.completedFuture(success);
+        return success;
     }
 
     private String buildBody(EmailMessage emailMessage) {

@@ -20,7 +20,7 @@ public class EmailKafkaListener {
             containerFactory = "emailKafkaListenerContainerFactory"
     )
     public void onEmailMessage(EmailMessage message) {
-        emailProcessorService.addToQueue(message);
+        emailProcessorService.processEmail(message);
     }
 
 }
