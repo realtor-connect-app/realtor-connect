@@ -1,9 +1,6 @@
 email:
   debug-mode:
     enabled: true
-  processor:
-    processing-delay-ms: 1
-    batch-size: 50
 
 kafka:
   topics:
